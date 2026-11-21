@@ -1,528 +1,224 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>VBDC MONITORING, RAMNAGAR-II</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APMS | AERO Pendency Monitoring System</title>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--tx:#1c2430;--mu:#6b7585;--ln:#e2e6ec;--ac:#1f6feb;--ok:#1a8a4a;--bad:#c9372c;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#12161c;--card:#1b212a;--tx:#e8ecf2;--mu:#98a2b3;--ln:#2b3340;--ac:#5b9bff;--ok:#4cc38a;--bad:#ff7b72;color-scheme:dark}}
-:root[data-theme="dark"]{--bg:#12161c;--card:#1b212a;--tx:#e8ecf2;--mu:#98a2b3;--ln:#2b3340;--ac:#5b9bff;--ok:#4cc38a;--bad:#ff7b72;color-scheme:dark}
-*{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
-.wrap{max-width:760px;margin:0 auto;padding:14px}
-.card{background:var(--card);border:1px solid var(--ln);border-radius:12px;padding:14px;margin-bottom:12px}
-h1{font-size:19px;margin:0}h2{font-size:16px;margin:0 0 8px}
-.mu{color:var(--mu);font-size:13px}
-input,select,textarea,button{font:inherit;color:var(--tx);background:var(--bg);border:1px solid var(--ln);border-radius:8px;padding:9px 10px;max-width:100%}
-input[type=number]{width:80px}input[type=checkbox]{width:auto}
-button{background:var(--ac);color:#fff;border:0;font-weight:600;cursor:pointer}
-button.g{background:transparent;color:var(--ac);border:1px solid var(--ln)}
-button.s{padding:4px 8px;font-size:13px;background:transparent;color:var(--bad);border:1px solid var(--ln)}
-.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sp{justify-content:space-between}
-.tabs{display:flex;gap:6px;margin-bottom:12px;overflow-x:auto}.tabs button{background:var(--card);color:var(--tx);border:1px solid var(--ln);white-space:nowrap}.tabs button.on{background:var(--ac);color:#fff;border-color:var(--ac)}
-table{width:100%;border-collapse:collapse}td,th{padding:7px 4px;border-bottom:1px solid var(--ln);text-align:left;font-size:14px}
-.sc{font-weight:700;text-align:right}.ok{color:var(--ok)}.bad{color:var(--bad)}
-.scroll{overflow-x:auto}.full{width:100%}.ct a{text-decoration:none;font-size:18px;margin-right:6px}
-.note{background:var(--bg);border:1px dashed var(--ln);border-radius:8px;padding:8px;font-size:13px;color:var(--mu)}
-
-:root{--ac:#1b7a3a;--top:#dff1e5;--sh:0 2px 12px rgba(20,60,35,.10)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ac:#3fb868;--top:#16261c;--sh:none}}
-:root[data-theme="dark"]{--ac:#3fb868;--top:#16261c;--sh:none}
-body{background-color:var(--bg);background-image:linear-gradient(180deg,var(--top),var(--bg) 260px);background-repeat:no-repeat}
-.card{border-radius:16px;box-shadow:var(--sh)}
-.banner{display:flex;justify-content:space-between;align-items:center;gap:10px;background:linear-gradient(135deg,#145c2b,#2f9e57);color:#fff;border-radius:16px;padding:16px;margin-bottom:12px;box-shadow:var(--sh)}
-.banner h1{font-size:18px;letter-spacing:.3px}.banner .sub{opacity:.9;font-size:13px;margin-top:2px}.banner button{background:rgba(255,255,255,.22);padding:7px 12px}
-.login{background:var(--card);border:1px solid var(--ln);border-radius:20px;padding:26px 18px;margin-top:8vh;box-shadow:var(--sh);text-align:center}
-.login .full{margin-bottom:8px}.login .note{text-align:left}.logo{font-size:42px}
-.tabs button{border-radius:20px}
-.datebar{display:flex;align-items:center;justify-content:space-between;gap:10px}
-.sec{padding:0;overflow:hidden}.sec .hd{padding:13px 14px;font-weight:700;font-size:16px;color:#fff}
-.sec .hd small{display:block;font-weight:400;opacity:.92;font-size:12px;margin-top:2px}
-.hd.poor{background:linear-gradient(135deg,#b3261e,#e55a4e)}.hd.best{background:linear-gradient(135deg,#145c2b,#2f9e57)}.hd.all{background:linear-gradient(135deg,#1d4f91,#3b82d6)}
-.sec .bd{padding:4px 14px 10px}
-.it{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--ln)}.it:last-child{border:0}
-.rk{flex:0 0 28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:13px;color:#fff}
-.rk.best{background:#2f9e57}.rk.poor{background:#d9453a}
-.in{flex:1;min-width:0}.nm2{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.bar{height:5px;background:var(--ln);border-radius:3px;margin-top:5px;overflow:hidden}.bar i{display:block;height:100%;border-radius:3px}
-.bar i.best{background:#2f9e57}.bar i.poor{background:#d9453a}
-.rt{text-align:right}.sv{font-size:20px;font-weight:800;line-height:1.1}.sv.best{color:var(--ok)}.sv.poor{color:var(--bad)}.sv.low{color:var(--bad)}
-th{color:var(--mu);font-size:12px;text-transform:uppercase;letter-spacing:.4px}
-
-/* theme: light orange, red = poor, light green = best */
-:root{--ac:#e8791a;--top:#ffe7cf;--ok:#1f8f4a;--bad:#d32f2f}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ac:#f59a45;--top:#2c1e10;--ok:#5fd18b;--bad:#ff6b63}}
-:root[data-theme="dark"]{--ac:#f59a45;--top:#2c1e10;--ok:#5fd18b;--bad:#ff6b63}
-.banner{background:linear-gradient(135deg,#ffb066,#ffd5a8);color:#4a2800}
-.banner button{background:rgba(255,255,255,.6);color:#4a2800}
-.tabs button.on{background:var(--ac);border-color:var(--ac);color:#fff}
-.hd.all{background:linear-gradient(135deg,#ffb066,#ffd5a8);color:#4a2800}
-.hd.poor{background:linear-gradient(135deg,#c62828,#ef5350);color:#fff}
-.hd.best{background:linear-gradient(135deg,#a8e6b8,#cdf3d6);color:#14532d}
-.rk.poor{background:#d32f2f}.rk.best{background:#8fd9a4;color:#14532d}
-.bar i.poor{background:#d32f2f}.bar i.best{background:#8fd9a4}
-.sv.poor,.sv.low{color:var(--bad)}.sv.best{color:var(--ok)}
-.xb{display:flex;gap:6px;justify-content:flex-end;padding:8px 0 2px}.xb button{padding:5px 10px;font-size:13px}
-.tg{min-width:64px}
-table.grid{border:1px solid rgba(128,128,128,.6);border-collapse:collapse;width:100%}
-table.grid th,table.grid td{border:1px solid rgba(128,128,128,.55);padding:9px 6px;text-align:center;vertical-align:middle}
-table.grid th{white-space:normal;background:rgba(255,176,102,.28);font-size:12px}
-table.grid th.l,table.grid td.l{text-align:left}
-table.grid.wide{min-width:700px}table.grid.wide th{min-width:76px}
-table.grid.num th:nth-child(1),table.grid.num td:nth-child(1){min-width:36px;width:36px}
-table.grid.num th:nth-child(2),table.grid.num td:nth-child(2){text-align:left;white-space:nowrap;min-width:120px}
-table.grid.tot tr:last-child td{font-weight:800;background:rgba(255,176,102,.2)}
-#qov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:50;display:flex;align-items:flex-end;justify-content:center}
-.qbox{background:var(--card);color:var(--tx);width:100%;max-width:760px;max-height:88vh;overflow:auto;border-radius:16px 16px 0 0;padding:14px;padding-bottom:calc(14px + env(safe-area-inset-bottom,0px))}
-.qlist{max-height:40vh;overflow:auto;margin:6px 0 10px}
-table.grid.xwide{min-width:980px}table.grid.xwide th{min-width:84px}
+:root{--navy:#14243a;--blue:#2457a7;--bg:#f3f6fb;--ink:#1c2736;--muted:#66758a;--line:#e3e9f1;--white:#fff;--red:#b42318;--amber:#a15c00;--green:#087443}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}.app{display:grid;grid-template-columns:245px 1fr;min-height:100vh}.sidebar{background:var(--navy);color:#fff;padding:22px 15px}.brand{font-size:18px;font-weight:700;line-height:1.35;margin:4px 10px 5px}.subbrand{font-size:11px;color:#b8c7dc;margin:0 10px 28px}.nav button{width:100%;text-align:left;border:0;background:transparent;color:#d7e0ed;padding:12px 13px;border-radius:8px;margin:3px 0;cursor:pointer;font-size:14px}.nav button.active,.nav button:hover{background:#294361;color:#fff}.sidebar-foot{font-size:11px;color:#aebbd0;line-height:1.5;margin:35px 10px}.main{min-width:0}.topbar{background:#fff;border-bottom:1px solid var(--line);padding:17px 26px;display:flex;align-items:center;justify-content:space-between;gap:15px}.topbar h1{font-size:20px;margin:0}.topbar small{color:var(--muted)}.content{padding:24px 26px;max-width:1500px;margin:auto}.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:18px}.toolbar select,.toolbar input,.field input,.field select,.field textarea{border:1px solid #ccd6e2;border-radius:7px;padding:10px 11px;background:#fff;color:var(--ink);font:inherit}.toolbar select{min-width:180px}.btn{border:0;border-radius:7px;padding:10px 14px;font-weight:600;cursor:pointer;background:var(--blue);color:#fff}.btn.secondary{background:#e9eff8;color:#23446f}.btn.danger{background:#fff0ee;color:var(--red)}.cards{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:14px;margin-bottom:20px}.card{background:#fff;border:1px solid var(--line);border-radius:11px;padding:17px}.card .label{font-size:12px;color:var(--muted);margin-bottom:9px}.card .num{font-size:27px;font-weight:700}.card .hint{font-size:11px;color:var(--muted);margin-top:5px}.panel{background:#fff;border:1px solid var(--line);border-radius:11px;margin-bottom:18px;overflow:hidden}.panel-head{padding:15px 17px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.panel-head h2{font-size:15px;margin:0}.panel-body{padding:17px}.table-wrap{overflow:auto}table{width:100%;border-collapse:collapse;min-width:720px}th,td{text-align:left;padding:11px 12px;border-bottom:1px solid #edf1f6;font-size:13px;white-space:nowrap}th{font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:#64748b;background:#f8fafc}tr:last-child td{border-bottom:0}.link{color:#2457a7;font-weight:700;cursor:pointer;text-decoration:underline}.badge{display:inline-block;padding:4px 8px;border-radius:20px;font-size:11px;font-weight:700}.badge.blo{background:#fff2d8;color:#925400}.badge.aero{background:#e8efff;color:#244f9a}.badge.ero{background:#e4f5ec;color:#087443}.muted{color:var(--muted)}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}.field label{font-size:12px;font-weight:700;color:#526174}.field input{width:100%}.uploadbox{border:1px dashed #aebed1;border-radius:9px;padding:16px;background:#f9fbfe}.uploadbox h3{font-size:14px;margin:0 0 7px}.uploadbox p{font-size:12px;color:var(--muted);line-height:1.5}.uploadbox input{max-width:100%;font-size:12px}.notice{background:#fff8e8;border:1px solid #f1d99c;color:#77510b;padding:12px 14px;border-radius:8px;font-size:12px;line-height:1.55;margin-bottom:16px}.success{background:#eaf7ef;border:1px solid #b8e2c6;color:#14683c;padding:10px 12px;border-radius:7px;font-size:12px;margin:10px 0}.hidden{display:none!important}.actions{display:flex;gap:7px;flex-wrap:wrap}.small{font-size:11px;color:var(--muted)}.empty{padding:25px;text-align:center;color:var(--muted);font-size:13px}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pill{display:inline-block;background:#edf2f8;padding:5px 8px;border-radius:6px;font-size:11px;margin:2px}.modal-back{position:fixed;inset:0;background:#0c1728a8;display:flex;align-items:center;justify-content:center;padding:18px;z-index:10}.modal{background:#fff;border-radius:12px;width:min(650px,100%);max-height:90vh;overflow:auto;padding:20px}.modal h2{font-size:18px;margin:0 0 15px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:12px}.footer-note{font-size:11px;color:var(--muted);line-height:1.5;margin:10px 0}.kpirow{display:flex;gap:8px;flex-wrap:wrap}.kpirow span{background:#f0f4f9;padding:7px 9px;border-radius:6px;font-size:12px}
+@media(max-width:850px){.app{grid-template-columns:1fr}.sidebar{padding:12px}.brand{margin-bottom:3px}.subbrand{margin-bottom:10px}.nav{display:flex;overflow:auto;gap:4px}.nav button{white-space:nowrap;width:auto}.sidebar-foot{display:none}.content{padding:16px}.topbar{padding:14px 16px}.cards{grid-template-columns:repeat(2,minmax(130px,1fr))}.grid2{grid-template-columns:1fr}}
+@media(max-width:480px){.cards{grid-template-columns:1fr 1fr}.card{padding:13px}.card .num{font-size:23px}.form-grid{grid-template-columns:1fr}}
+.chip{padding:3px 9px;border-radius:10px;font-weight:700;font-size:12px;white-space:nowrap}.chip.b0{background:#e7f6ee;color:#087443}.chip.b1{background:#fff4dd;color:#8a4f00}.chip.b2{background:#ffe9d6;color:#b54708}.chip.b3{background:#fde7e5;color:#b42318}.card.focus{background:#14243a;color:#fff;border-color:#14243a}.card.focus .label,.card.focus .hint{color:#b8c7dc}.card.warn .num{color:#b54708}.card.bad .num{color:#b42318}
+.gh{cursor:pointer;white-space:nowrap;user-select:none}.gh.on{color:#1d4ed8}.ga{font-size:10px;opacity:.7}
+#gmBox{position:fixed;z-index:90;background:#fff;border:1px solid #d0d5dd;border-radius:10px;padding:10px;width:260px;max-height:72vh;display:flex;flex-direction:column;gap:8px;box-shadow:0 8px 24px rgba(0,0,0,.18);font-size:13px;color:#1f2937}
+#gmBox .gl{overflow:auto;max-height:34vh;display:flex;flex-direction:column;gap:5px}#gmBox label{display:flex;gap:8px;align-items:center}#gmBox input[type=text]{padding:8px;border:1px solid #d0d5dd;border-radius:6px}#gmBox .gr{display:flex;gap:8px}#gmBox button{flex:1;padding:9px;border:0;border-radius:6px;background:#e9eff8;color:#23446f;font-weight:600;cursor:pointer}#gmBox button.p{background:var(--blue);color:#fff}
+.logd{border:1px solid #e5e9f0;border-radius:8px;margin:8px 0;padding:8px 10px}.logd summary{cursor:pointer;font-size:13px}.logt{width:100%;font-size:13px;margin-top:8px}
 </style>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.31/jspdf.plugin.autotable.min.js"></script>
 </head>
-<body><div class="wrap" id="app"></div>
+<body>
+<div id="loginBox" style="position:fixed;inset:0;z-index:99;background:#14243a;display:flex;align-items:center;justify-content:center;padding:20px"><div style="background:#fff;border-radius:12px;padding:26px;width:100%;max-width:360px"><h2 style="margin:0 0 4px">APMS</h2><p class="small" style="margin:0 0 16px">AERO Pendency Monitoring System. Sign in to continue.</p><div class="field" style="display:grid;gap:10px"><input id="lgEmail" type="email" placeholder="Email" autocomplete="username"><input id="lgPass" type="password" placeholder="Password" autocomplete="current-password"><button class="btn" id="lgBtn">Sign in</button></div><div id="lgErr" class="small" style="color:#b42318;margin-top:10px"></div></div></div>
+<div class="app">
+<aside class="sidebar"><div class="brand">APMS</div><div class="subbrand">AERO PENDENCY MONITORING SYSTEM</div>
+<nav class="nav" id="nav">
+<button class="active" data-page="dashboard">▦ &nbsp; Dashboard</button><button data-page="applications">▤ &nbsp; Application Pendency</button><button data-page="blo">♙ &nbsp; BLO-wise Report</button><button data-page="log">✉ &nbsp; Reminder Log</button><button data-page="upload">⇧ &nbsp; Excel Upload</button><button data-page="master">☷ &nbsp; BLO Master</button><button data-page="history">◷ &nbsp; Import History</button><button data-page="settings">⚙ &nbsp; Settings & Data</button>
+</nav><div class="sidebar-foot">Not signed in</div></aside>
+<main class="main"><header class="topbar"><div><h1 id="pageTitle">Dashboard</h1><small>Electoral roll application monitoring</small></div><div class="small" id="today"></div></header><section class="content">
+<div id="page-dashboard" class="page">
+<div class="toolbar"><label class="small">Form type</label><select id="dashForm" onchange="renderAll()"><option value="ALL">All form types</option><option value="FORM6">Form 6 – Fresh inclusion</option><option value="FORM8_SHIFT">Form 8 – Shifting</option><option value="FORM8_CORR">Form 8 – Correction</option><option value="FORM7">Form 7 – Deletion</option></select><button class="btn secondary" onclick="exportCurrent()">Export filtered report</button></div>
+<div class="cards" id="summaryCards"></div>
+<div class="panel"><div class="panel-head"><h2>Pending at BLO: ageing</h2><button class="btn secondary" onclick="showPage('applications');document.getElementById('appLevel').value='BLO';renderApplications()">View oldest first</button></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Pending for</th><th>Applications</th><th>Share</th></tr></thead><tbody id="ageRows"></tbody></table></div></div></div>
+<div class="panel"><div class="panel-head"><h2>Level-wise pendency</h2><span class="small" id="summarySub"></span></div><div class="panel-body"><div class="table-wrap"><table><thead><tr><th>Pending level</th><th>Applications</th><th>Share</th><th>Action</th></tr></thead><tbody id="levelRows"></tbody></table></div></div></div>
+<div class="panel"><div class="panel-head"><h2>BLOs to follow up (most pending first)</h2><button class="btn secondary" onclick="showPage('blo')">View all BLOs</button></div><div class="table-wrap"><table><thead><tr><th>BLO</th><th>Part No.</th><th>BLO pending</th><th>Oldest (days)</th><th>&gt; 7 days</th><th>Last reminded</th><th>Contact</th></tr></thead><tbody id="dashBloRows"></tbody></table></div></div>
+</div>
+<div id="page-applications" class="page hidden"><div class="toolbar"><select id="appForm" onchange="renderApplications()"><option value="ALL">All form types</option><option value="FORM6">Form 6 – Fresh inclusion</option><option value="FORM8_SHIFT">Form 8 – Shifting</option><option value="FORM8_CORR">Form 8 – Correction</option><option value="FORM7">Form 7 – Deletion</option></select><select id="appLevel" onchange="renderApplications()"><option value="ALL">All levels</option><option value="BLO" selected>BLO</option><option value="AERO">AERO</option><option value="ERO">ERO</option></select><input id="appSearch" placeholder="Search reference / applicant / part" oninput="renderApplications()"><button class="btn secondary" id="appClr" onclick="clearFilters('apps')">Clear filters</button><button class="btn" onclick="exportMenu(event,'apps',this)">Export ▾</button></div><div class="panel"><div class="table-wrap"><table><thead id="appHead"></thead><tbody id="appRows"></tbody></table></div><div id="appEmpty" class="empty hidden">No matching applications.</div></div></div>
+<div id="page-blo" class="page hidden"><div class="toolbar"><select id="bloForm" onchange="renderBloPage()"><option value="ALL">All form types</option><option value="FORM6">Form 6</option><option value="FORM8_SHIFT">Form 8 – Shifting</option><option value="FORM8_CORR">Form 8 – Correction</option><option value="FORM7">Form 7</option></select><input id="bloSearch" placeholder="Search BLO name / part" oninput="renderBloPage()"><button class="btn secondary" id="bloClr" onclick="clearFilters('blo')">Clear filters</button><button class="btn" onclick="exportMenu(event,'blo',this)">Export ▾</button></div><div class="panel"><div class="table-wrap"><table><thead id="bloHead"></thead><tbody id="bloRows"></tbody></table></div><div id="bloEmpty" class="empty hidden">No BLO records. Add BLO details in BLO Master.</div></div><div id="bloDetail" class="panel hidden"></div></div>
+<div id="page-log" class="page hidden"><div class="toolbar"><select id="logBlo" onchange="renderLog()"><option value="">All BLOs</option></select><button class="btn secondary" onclick="clearFilters('logsum')">Clear filters</button><button class="btn" onclick="exportMenu(event,'logsum',this)">Export ▾</button><button class="btn secondary" onclick="exportLog()">Export form-wise log</button></div>
+<div class="panel"><div class="panel-head"><h2>BLO performance after reminders</h2></div><div class="table-wrap"><table><thead id="logHead"></thead><tbody id="logRows"></tbody></table></div><div id="logEmpty" class="empty hidden">No reminders yet. They are saved when you tap Call or WhatsApp for a BLO.</div></div>
+<div class="panel"><div class="panel-head"><h2>Day-wise log</h2></div><div class="panel-body" id="logDays"></div></div></div>
+<div id="page-upload" class="page hidden"><div class="notice"><b>Daily upload rule:</b> Upload each form type separately. Records are matched by Reference No. Existing applications are updated, not duplicated. Import history is retained in this browser. For accurate AERO/ERO ageing, add the relevant stage date column to the source Excel when available.</div><div class="grid2">
+<div class="uploadbox"><h3>Form 6 – Fresh inclusion</h3><p>Upload the daily Form 6 Excel file.</p><input type="file" accept=".xlsx,.xls,.csv" onchange="importExcel(this,'FORM6')"></div>
+<div class="uploadbox"><h3>Form 7 – Deletion</h3><p>Upload the daily Form 7 Excel file.</p><input type="file" accept=".xlsx,.xls,.csv" onchange="importExcel(this,'FORM7')"></div>
+<div class="uploadbox"><h3>Form 8 – Shifting</h3><p>Upload the Form 8 shifting Excel file.</p><input type="file" accept=".xlsx,.xls,.csv" onchange="importExcel(this,'FORM8_SHIFT')"></div>
+<div class="uploadbox"><h3>Form 8 – Correction</h3><p>Upload the Form 8 correction Excel file.</p><input type="file" accept=".xlsx,.xls,.csv" onchange="importExcel(this,'FORM8_CORR')"></div>
+</div><label class="small" style="display:block;margin:12px 0"><input type="checkbox" id="closeMissing"> Close pending applications of this form that are missing from the uploaded file. Tick only when the file is the full pendency list.</label><div id="uploadMessage"></div><div class="panel" style="margin-top:18px"><div class="panel-head"><h2>Required / recognised Excel columns</h2></div><div class="panel-body small">Reference No. (unique key), Applicant Name, AC No., Part No., Submission Date, Assigned Date, Current Status. Optional but recommended for stage ageing: Status Updated Date, FVR Submitted Date / Field Verification Date, Forwarded Date. Column matching is case-insensitive and accepts common heading variations.</div></div></div>
+<div id="page-master" class="page hidden"><div class="toolbar"><button class="btn" onclick="openBloModal()">+ Add BLO manually</button><label class="btn secondary" for="bloFile" style="cursor:pointer">Upload BLO Excel</label><input id="bloFile" type="file" accept=".xlsx,.xls,.csv" class="hidden" onchange="importBloMaster(this)"></div><div class="notice">Part No. is used to map each application to one BLO. Your confirmation was that each Part No. corresponds to exactly one BLO. Keep this mapping accurate. Include BLO Name, Mobile No., AC No. and Part No. in the master Excel.</div><div class="panel"><div class="table-wrap"><table><thead><tr><th>BLO name</th><th>Mobile number</th><th>AC No.</th><th>Part No.</th><th>Actions</th></tr></thead><tbody id="masterRows"></tbody></table></div><div id="masterEmpty" class="empty hidden">No BLO master entries yet.</div></div></div>
+<div id="page-history" class="page hidden"><div class="panel"><div class="panel-head"><h2>Excel import history</h2></div><div class="table-wrap"><table><thead><tr><th>Date/time</th><th>Form type</th><th>File name</th><th>Rows read</th><th>New</th><th>Updated</th><th>Skipped</th></tr></thead><tbody id="historyRows"></tbody></table></div><div id="historyEmpty" class="empty hidden">No imports recorded.</div></div></div>
+<div id="page-settings" class="page hidden"><div class="panel"><div class="panel-head"><h2>Data management</h2></div><div class="panel-body"><p class="small">Data is stored in the cloud (Firebase) and shared across devices where you are signed in. Download a JSON backup regularly.</p><div class="field" style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:12px 0"><span class="small">My Part Nos.</span><input id="rngFrom" type="number" style="width:80px"><span>to</span><input id="rngTo" type="number" style="width:80px"><button class="btn" onclick="saveRange()">Save</button><button class="btn secondary" onclick="saveRange(true)">Show all parts</button></div><div class="small" id="rngNote"></div>
+<div style="margin:16px 0"><b>WhatsApp message</b><div class="small" style="margin:4px 0">Placeholders: {name} {part} {count} {list}</div><textarea id="msgTpl" rows="7" style="width:100%;padding:8px;border:1px solid #d0d5dd;border-radius:8px;font:inherit"></textarea><div class="small" style="margin:8px 0 4px">Each form line. Placeholders: {no} {ref} {form} {applicant} {assigned} {days}</div><textarea id="lineTpl" rows="2" style="width:100%;padding:8px;border:1px solid #d0d5dd;border-radius:8px;font:inherit"></textarea><div class="actions" style="margin-top:8px"><button class="btn" onclick="saveTpl()">Save message</button><button class="btn secondary" onclick="saveTpl(true)">Reset to default</button></div></div>
+<div class="actions"><button class="btn secondary" onclick="cloud.migrate()">Upload old browser data to cloud</button><button class="btn secondary" onclick="cloud.signOut()">Sign out</button><button class="btn secondary" onclick="downloadBackup()">Download JSON backup</button><label class="btn secondary" for="restoreFile" style="cursor:pointer">Restore JSON backup</label><input id="restoreFile" type="file" accept=".json" class="hidden" onchange="restoreBackup(this)"><button class="btn danger" onclick="clearAllData()">Clear all local data</button></div><p class="footer-note">Do not use this local prototype as the official system for live voter data until authentication, role-based access, server-side validation, audit logs, secure backups and an approved hosting environment are implemented. Share applicant data only with authorised personnel.</p></div></div></div>
+</section></main></div>
+<div id="modalRoot"></div>
+<script>
+const FORM_LABEL={FORM6:'Form 6 – Fresh inclusion',FORM7:'Form 7 – Deletion',FORM8_SHIFT:'Form 8 – Shifting',FORM8_CORR:'Form 8 – Correction'};
+const KEY='apms_aero_v1';let db=loadDB();db.reminders=db.reminders||{};db.reminderlog=db.reminderlog||[];
+function loadDB(){try{return JSON.parse(localStorage.getItem(KEY))||{apps:[],blos:[],history:[],reminders:{}}}catch(e){return{apps:[],blos:[],history:[],reminders:{}}}}
+function saveDB(){if(window.cloud?.active)window.cloud.push();else localStorage.setItem(KEY,JSON.stringify(db));renderAll()}
+function todayISO(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+document.getElementById('today').textContent=new Date().toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'});
+function norm(s){return String(s??'').trim().toLowerCase().replace(/[\s_\-./()]+/g,'').replace(/[^a-z0-9]/g,'')}
+function getVal(o,aliases){let keys=Object.keys(o);for(let a of aliases){let k=keys.find(x=>norm(x)===norm(a));if(k&&o[k]!==undefined&&o[k]!==null&&String(o[k]).trim()!=='')return o[k]}return ''}
+function localISO(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function dateISO(v){if(!v)return '';if(v instanceof Date&&!isNaN(v))return localISO(new Date(v.getTime()+43200000));if(typeof v==='number'&&window.XLSX){let d=XLSX.SSF.parse_date_code(v);if(d)return `${d.y}-${String(d.m).padStart(2,'0')}-${String(d.d).padStart(2,'0')}`}let s=String(v).trim();if(!s)return '';let m=s.match(/^(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{4})$/);if(m)return `${m[3]}-${m[2].padStart(2,'0')}-${m[1].padStart(2,'0')}`;let d=new Date(s);return isNaN(d)?'':localISO(d)}
+function daysBetween(s){if(!s)return null;let a=new Date(s+'T00:00:00'),b=new Date();if(isNaN(a))return null;return Math.max(0,Math.floor((new Date(b.getFullYear(),b.getMonth(),b.getDate())-a)/86400000))}
+function classify(status){let s=norm(status);if(s.includes('forwardedtoero')||s==='forwardedero')return'ERO';if(s.includes('fv rsubmitted'.replace(/ /g,''))||s.includes('fieldverification')||s.includes('reinitiatedtoaero')||s==='aeropending')return'AERO';if(s==='submitted'||s.includes('applicationreceived'))return'AERO';if(s.includes('bloassigned')||s.includes('reinitiatedtoblo')||s.includes('assignedtoblo'))return'BLO';if(s.includes('disposed')||s.includes('approved')||s.includes('rejected')||s.includes('deleted')||s.includes('completed'))return'DISPOSED';return'UNKNOWN'}
+function stageDate(row,level){let statusDate=dateISO(getVal(row,['Status Updated Date','Last Action Date','Current Status Date','Stage Date']));if(statusDate)return statusDate;if(level==='BLO')return dateISO(getVal(row,['Assigned Date','Date Assigned','BLO Assigned Date']));if(level==='AERO'){let fvr=dateISO(getVal(row,['FVR Submitted Date','Field Verification Date','BLO Report Submitted Date','Report Submitted Date','AERO Pending Since']));if(fvr)return fvr;let status=norm(getVal(row,['Current Status','Status']));if(status==='submitted')return dateISO(getVal(row,['Submission Date','Application Date']));return ''}if(level==='ERO')return dateISO(getVal(row,['Forwarded Date','Forwarded to ERO Date','ERO Forwarding Date']));return ''}
+function mapFormLabel(f){return FORM_LABEL[f]||f}
+async function importExcel(input,form){let file=input.files[0];if(!file)return;try{let data=await file.arrayBuffer(),wb=XLSX.read(data,{type:'array',cellDates:true});let sheet=wb.Sheets[wb.SheetNames[0]],rows=XLSX.utils.sheet_to_json(sheet,{defval:''});let added=0,updated=0,skipped=0,closed=0,same0=0,seen=new Set();restoreXl();for(let r of rows){let ref=String(getVal(r,['Reference No.','Reference Number','Application No.','Application Number','Form Reference No','Ref No'])||'').trim();if(!ref){skipped++;continue}seen.add(ref);let status=String(getVal(r,['Current Status','Status','Application Status'])||'').trim();let level=classify(status);let part=String(getVal(r,['Part No.','Part Number','Part No'])||'').trim();let ac=String(getVal(r,['AC No.','Assembly Constituency No.','AC Number'])||'').trim();let blo=db.blos.find(b=>String(b.partNo)===part&&(!b.acNo||!ac||String(b.acNo)===ac));let name=String(getVal(r,['Applicant Name','Name of Applicant','Applicant'])||'').trim();let assigned=dateISO(getVal(r,['Assigned Date','Date Assigned','BLO Assigned Date']));let submission=dateISO(getVal(r,['Submission Date','Application Date']));let pendingSince=stageDate(r,level);let rec={ref,applicant:name,form,acNo:ac,partNo:part,submissionDate:submission,assignedDate:assigned,status,level,pendingSince,pendingDays:daysBetween(pendingSince),ageMissing:!!level&&level!=='DISPOSED'&&!pendingSince,bloName:blo?.name||'',bloMobile:blo?.mobile||'',updatedAt:new Date().toISOString(),sourceFile:file.name};let i=db.apps.findIndex(a=>a.ref===ref);if(i>=0){let old=db.apps[i];let statusHistory=Array.isArray(old.statusHistory)?old.statusHistory.slice():[];if(old.status!==rec.status||old.level!==rec.level||old.pendingSince!==rec.pendingSince){statusHistory.push({observedAt:rec.updatedAt,previousStatus:old.status||'',newStatus:rec.status,previousLevel:old.level||'',newLevel:rec.level,previousPendingSince:old.pendingSince||'',newPendingSince:rec.pendingSince||''})}let same=['status','level','pendingSince','applicant','partNo','acNo','assignedDate','submissionDate','bloName','bloMobile'].every(k=>(old[k]??'')===(rec[k]??''));if(same){same0++}else{db.apps[i]={...old,...rec,statusHistory,createdAt:old.createdAt||old.updatedAt,...((old.status!==rec.status||old.level!==rec.level)&&old.aeroStatus?{aeroStatus:''}:{})};updated++}}else{rec.createdAt=rec.updatedAt;rec.statusHistory=[{observedAt:rec.updatedAt,previousStatus:'',newStatus:rec.status,previousLevel:'',newLevel:rec.level,previousPendingSince:'',newPendingSince:rec.pendingSince||''}];db.apps.push(rec);added++}}
+if(document.getElementById('closeMissing')?.checked&&seen.size){db.apps.forEach(a=>{if(a.form===form&&!seen.has(a.ref)&&['BLO','AERO','ERO'].includes(a.level)){a.level='DISPOSED';a.ageMissing=false;closed++}})}let h={date:new Date().toISOString(),form,file:file.name,rows:rows.length,added,updated,skipped};db.history.unshift(h);saveDB();showUploadMsg(`${mapFormLabel(form)} import completed: ${rows.length} rows read; ${added} new; ${updated} updated; ${same0} unchanged; ${skipped} skipped (missing reference number)${closed?'; '+closed+' closed (not in this file)':''}.`);input.value='';}catch(e){showUploadMsg('Import failed: '+e.message,true)}}
+function showUploadMsg(t,bad=false){let el=document.getElementById('uploadMessage');el.innerHTML=`<div class="${bad?'notice':'success'}">${esc(t)}</div>`}
+async function importBloMaster(input){let f=input.files[0];if(!f)return;try{let wb=XLSX.read(await f.arrayBuffer(),{type:'array'}),grid=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
+let hi=grid.slice(0,15).findIndex(r=>r.some(c=>/part|booth/i.test(c))&&r.some(c=>/name|blo/i.test(c)));
+if(hi<0){alert('Could not find the header row. First rows seen: '+grid.slice(0,3).map(r=>r.join(' | ')).join(' // '));input.value='';return}
+let H=grid[hi].map(x=>String(x).toLowerCase().replace(/[^a-z0-9]/g,'')),col=(...ps)=>{for(let p of ps){let i=H.findIndex(h=>h.includes(p));if(i>=0)return i}return -1};
+let cN=col('bloname','nameofblo','name'),cP=col('partno','partnumber','booth','part'),cA=col('acno','acnumber','assembly'),cM=col('mobile','phone','contact');
+if(cN<0||cP<0){alert('Headers found: '+grid[hi].join(' | ')+'. Need a BLO name column and a Part No. column.');input.value='';return}
+let n=0;for(let r of grid.slice(hi+1)){let name=String(r[cN]||'').trim(),part=String(r[cP]||'').trim(),ac=cA>=0?String(r[cA]||'').trim():'',mobile=cM>=0?String(r[cM]||'').replace(/\D/g,'').slice(-10):'';if(!name||!part)continue;let i=db.blos.findIndex(b=>String(b.partNo)===part&&String(b.acNo||'')===ac),b={name,partNo:part,acNo:ac,mobile};if(i>=0)db.blos[i]=b;else db.blos.push(b);n++}
+saveDB();alert(`${n} BLO records imported/updated.`+(n?'':' Headers found: '+grid[hi].join(' | ')));input.value=''}catch(e){alert('BLO import failed: '+e.message)}}
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function getRange(){try{let r=JSON.parse(localStorage.getItem('apms_range'));if(r)return r}catch(e){}return{on:true,from:102,to:116}}
+function inRange(a){let r=getRange();if(!r.on)return true;let p=parseInt(a.partNo,10);return !isNaN(p)&&p>=r.from&&p<=r.to}
+function rangeLabel(){let r=getRange();return r.on?`Parts ${r.from}–${r.to}`:'All parts'}
+function syncRangeUI(){let r=getRange();document.getElementById('rngFrom').value=r.from;document.getElementById('rngTo').value=r.to;document.getElementById('rngNote').textContent='Showing: '+rangeLabel()}
+function saveRange(all){let f=parseInt(document.getElementById('rngFrom').value,10)||102,t=parseInt(document.getElementById('rngTo').value,10)||116;localStorage.setItem('apms_range',JSON.stringify({on:!all,from:f,to:t}));syncRangeUI();renderAll()}
+const DEF_MSG='Hi Mr./Miss {name},\nPart No. {part}: you have {count} form(s) lying at your login.\nPlease complete field verification and revert it, or send it onward from your login.\n\nForms:\n{list}\n\nThank you.',DEF_LINE='{no}. {ref} ({form}) | {applicant} | Assigned to BLO: {assigned} (pending for {days} days)';
+function getTpl(){try{let t=JSON.parse(localStorage.getItem('apms_tpl'));if(t&&t.msg&&t.line)return t}catch(e){}return{msg:DEF_MSG,line:DEF_LINE}}
+function syncTplUI(){let t=getTpl();document.getElementById('msgTpl').value=t.msg;document.getElementById('lineTpl').value=t.line}
+function saveTpl(reset){if(reset)localStorage.removeItem('apms_tpl');else localStorage.setItem('apms_tpl',JSON.stringify({msg:document.getElementById('msgTpl').value,line:document.getElementById('lineTpl').value}));syncTplUI();alert(reset?'Message reset to default.':'Message saved on this device.')}
+function fillTpl(t,o){return t.replace(/\{(\w+)\}/g,(m,k)=>o[k]!==undefined?o[k]:m)}
+function ddmmyyyy(i){return i?i.split('-').reverse().join('-'):'—'}
+function appsFiltered(form='ALL',level='ALL'){return db.apps.filter(a=>(form==='ALL'||a.form===form)&&(level==='ALL'||a.level===level)&&inRange(a))}
+function currentForm(){return document.getElementById('dashForm')?.value||'ALL'}
+function renderAll(){applyAero();db.apps.forEach(a=>{if(a.pendingSince)a.pendingDays=daysBetween(a.pendingSince)});renderDashboard();renderApplications();renderBloPage();renderMaster();renderHistory();renderLog()}
+function bloOf(a){return db.blos.find(b=>String(b.partNo)===String(a.partNo)&&(!b.acNo||!a.acNo||String(b.acNo)===String(a.acNo)))}
+function bloNameOf(a){return bloOf(a)?.name||a.bloName||'Not mapped'}
+function ageBucket(d){if(d==null)return'na';return d<=3?'b0':d<=7?'b1':d<=15?'b2':'b3'}
+function ageChip(d){return d==null?'—':`<span class="chip ${ageBucket(d)}">${d}d</span>`}
+function remindedText(key){let t=db.reminders[key];if(!t)return'Never';let d=daysBetween(localISO(new Date(t)));return d===0?'Today':d+' d ago'}
+function markReminded(key,ch,items){db.reminders[key]=new Date().toISOString();if(ch){let [ac,part]=key.split('|'),b=db.blos.find(x=>String(x.partNo)===part&&(!x.acNo||!ac||String(x.acNo)===ac));db.reminderlog=db.reminderlog||[];db.reminderlog.unshift({id:Date.now()+'_'+part,date:new Date().toISOString(),key,name:b?.name||'',part,channel:ch,items:items||[]})}saveDB()}
+function pendingItems(key){let [ac,part]=key.split('|');return appsFiltered('ALL').filter(x=>x.level==='BLO'&&String(x.partNo)===part&&(!ac||ac==='unknown'||!x.acNo||String(x.acNo)===ac)).map(x=>({r:x.ref,n:x.applicant||''}))}
+function renderDashboard(){let a=appsFiltered(currentForm()),c={BLO:0,AERO:0,ERO:0,DISPOSED:0,UNKNOWN:0};a.forEach(x=>c[x.level]=(c[x.level]||0)+1);let bp=a.filter(x=>x.level==='BLO'),o7=bp.filter(x=>x.pendingDays>7).length,o15=bp.filter(x=>x.pendingDays>15).length,groups=groupBlo(a),unm=bp.filter(x=>!bloOf(x)).length;
+let cards=[['Pending at BLO',c.BLO,'Awaiting BLO action','focus'],['BLO pending over 7 days',o7,'Follow up now','warn'],['BLO pending over 15 days',o15,'Escalate','bad'],['BLOs with pending forms',groups.filter(g=>g.BLO>0).length,unm+' forms have no BLO mapped','']];
+document.getElementById('summaryCards').innerHTML=cards.map(x=>`<div class="card ${x[3]}"><div class="label">${x[0]}</div><div class="num">${x[1]}</div><div class="hint">${x[2]}</div></div>`).join('');
+let pending=c.BLO+c.AERO+c.ERO;document.getElementById('summarySub').textContent=`${rangeLabel()} · ${pending} pending in total · ${c.DISPOSED||0} closed · ${c.UNKNOWN||0} unclassified`;
+let B={b0:0,b1:0,b2:0,b3:0,na:0},lab={b0:'0–3 days',b1:'4–7 days',b2:'8–15 days',b3:'Over 15 days',na:'Stage date not in Excel'};bp.forEach(x=>B[ageBucket(x.pendingDays)]++);
+document.getElementById('ageRows').innerHTML=Object.keys(lab).map(k=>`<tr><td><span class="chip ${k}">${lab[k]}</span></td><td><b>${B[k]}</b></td><td>${c.BLO?Math.round(B[k]/c.BLO*100):0}%</td></tr>`).join('');
+document.getElementById('levelRows').innerHTML=['BLO','AERO','ERO'].map(l=>`<tr><td><span class="badge ${l.toLowerCase()}">${l}</span></td><td><b>${c[l]}</b></td><td>${pending?Math.round(c[l]/pending*100):0}%</td><td><a class="link" onclick="showPage('applications');document.getElementById('appLevel').value='${l}';document.getElementById('appForm').value='${currentForm()}';renderApplications()">View applications</a></td></tr>`).join('');
+document.getElementById('dashBloRows').innerHTML=groups.filter(g=>g.BLO>0).slice(0,20).map(x=>`<tr><td><a class="link" onclick="openBloDetail('${esc(x.key)}')">${esc(x.name)}</a></td><td>${esc(x.part)}</td><td><b>${x.BLO}</b></td><td>${ageChip(x.oldest)}</td><td>${x.over7}</td><td>${remindedText(x.key)}</td><td><div class="actions">${x.mobile?`<button class="btn secondary" onclick="callBlo('${esc(x.mobile)}','${esc(x.key)}')">Call</button><button class="btn secondary" onclick="whatsappBlo('${esc(x.key)}','${currentForm()}')">WhatsApp</button>`:'<span class="small">No mobile</span>'}</div></td></tr>`).join('')||'<tr><td colspan="7" class="empty">Nothing pending at BLO level.</td></tr>'}
+function groupBlo(list){let map={};list.forEach(a=>{let part=String(a.partNo||''),m=bloOf(a),key=m?`${m.acNo}|${m.partNo}`:`unknown|${part}`;if(!map[key])map[key]={key,name:m?.name||'BLO not mapped',mobile:m?.mobile||'',part,ac:m?.acNo||a.acNo||'',BLO:0,AERO:0,ERO:0,total:0,oldest:0,over7:0};let g=map[key];if(a.level in g)g[a.level]++;g.total++;if(a.level==='BLO'&&a.pendingDays!=null){g.oldest=Math.max(g.oldest,a.pendingDays);if(a.pendingDays>7)g.over7++}});return Object.values(map).sort((x,y)=>y.BLO-x.BLO||y.over7-x.over7)}
+function restoreXl(){db.apps.forEach(a=>{if(a._xl!==undefined){a.level=a._xl;if(a._xs!==undefined)a.pendingSince=a._xs;else delete a.pendingSince;if(a._xa!==undefined)a.ageMissing=a._xa;else delete a.ageMissing;delete a._xl;delete a._xs;delete a._xa}})}
+function applyAero(){restoreXl();db.apps.forEach(a=>{let s=a.aeroStatus;if(s==='Accepted'||s==='Rejected'){a._xl=a.level;a._xs=a.pendingSince;a._xa=a.ageMissing;a.level='DISPOSED'}else if(s==='Reverted to BLO'&&a.level!=='BLO'){a._xl=a.level;a._xs=a.pendingSince;a._xa=a.ageMissing;a.level='BLO';a.pendingSince=a.aeroAt||todayISO();a.ageMissing=false}})}
+const AERO_OPTS=['','Accepted','Rejected','Reverted to BLO'];
+function setAero(el,f){let a=db.apps.find(x=>x.ref===el.dataset.ref);if(!a)return;a[f]=el.value;a.aeroAt=todayISO();saveDB()}
+const GR={};
+function gs(id){return GR[id]||(GR[id]={f:{},s:null,cfg:null,base:[],view:[]})}
+function dv(c,r){let v=c.v(r);return(v===null||v===undefined||v==='')?'(Blanks)':String(v)}
+function gridRows(id,rows,ex){let st=gs(id);return rows.filter(r=>st.cfg.cols.every(c=>{if(!c.v||c.k===ex)return true;let f=st.f[c.k];return !f||f.has(dv(c,r))}))}
+function gridSort(id,rows){let st=gs(id),s=st.s;if(!s)return rows;let c=st.cfg.cols.find(c=>c.k===s.k),g=c.sv||c.v,bl=v=>v===''||v==null;return rows.slice().sort((a,b)=>{let x=g(a),y=g(b);if(bl(x)&&bl(y))return 0;if(bl(x))return 1;if(bl(y))return -1;let r=(typeof x==='number'&&typeof y==='number')?x-y:String(x).localeCompare(String(y),undefined,{numeric:true});return s.d*r})}
+function renderGrid(id,cfg,rows,head,body,cap){let st=gs(id);st.cfg=cfg;st.base=rows;let v=gridSort(id,gridRows(id,rows));st.view=v;
+head.innerHTML='<tr>'+cfg.cols.map(c=>{let on=st.f[c.k],ar=st.s&&st.s.k===c.k?(st.s.d>0?' ▲':' ▼'):'';return `<th><span class="gh${on?' on':''}" data-g="${id}" data-k="${c.k}"${c.nf?'':' onclick="gridMenu(event,this)"'}>${c.t}${ar}${c.nf?'':' <span class="ga">▾</span>'}</span></th>`}).join('')+'</tr>';
+body.innerHTML=v.slice(0,cap||1000).map(r=>'<tr>'+cfg.cols.map(c=>'<td>'+(c.h?c.h(r):esc(c.v(r)))+'</td>').join('')+'</tr>').join('');return v}
+function clearFilters(id){let st=gs(id);st.f={};st.s=null;renderAll()}
+function clrLabel(id,btn){let n=Object.keys(gs(id).f).length;let b=document.getElementById(btn);if(b)b.textContent='Clear filters'+(n?' ('+n+')':'')}
+function closeGm(){let b=document.getElementById('gmBox');if(b)b.remove()}
+document.addEventListener('click',e=>{let b=document.getElementById('gmBox');if(b&&!b.contains(e.target))closeGm()});
+function placeGm(el,html){closeGm();let b=document.createElement('div');b.id='gmBox';b.innerHTML=html;document.body.appendChild(b);let r=el.getBoundingClientRect();b.style.left=Math.max(8,Math.min(r.left,innerWidth-270))+'px';b.style.top=Math.min(r.bottom+4,innerHeight-120)+'px';b.addEventListener('click',e=>e.stopPropagation());return b}
+function gridMenu(e,el){e.stopPropagation();let id=el.dataset.g,k=el.dataset.k,st=gs(id),c=st.cfg.cols.find(c=>c.k===k);
+let vals=[...new Set(gridRows(id,st.base,k).map(r=>dv(c,r)))].sort((a,b)=>a==='(Blanks)'?1:b==='(Blanks)'?-1:a.localeCompare(b,undefined,{numeric:true}));
+let sel=st.f[k]?new Set(st.f[k]):new Set(vals);
+let b=placeGm(el,`<div class="gr"><button data-a="1">Sort A→Z</button><button data-a="-1">Sort Z→A</button></div><input type="text" placeholder="Search values" id="gmQ"><label><input type="checkbox" id="gmAll"> Select all</label><div class="gl" id="gmL"></div><div class="gr"><button id="gmClr">Clear</button><button class="p" id="gmOk">OK</button></div>`);
+let L=b.querySelector('#gmL'),Q=b.querySelector('#gmQ'),A=b.querySelector('#gmAll');
+function draw(){let q=Q.value.toLowerCase(),vis=vals.filter(v=>v.toLowerCase().includes(q));L.innerHTML=vis.map(v=>`<label><input type="checkbox" data-v="${esc(v)}"${sel.has(v)?' checked':''}> ${esc(v)}</label>`).join('')||'<span class="small">No values</span>';A.checked=vis.length>0&&vis.every(v=>sel.has(v));L.querySelectorAll('input').forEach(i=>i.onchange=()=>{i.checked?sel.add(i.dataset.v):sel.delete(i.dataset.v);A.checked=vis.every(v=>sel.has(v))})}
+A.onchange=()=>{let q=Q.value.toLowerCase();vals.filter(v=>v.toLowerCase().includes(q)).forEach(v=>A.checked?sel.add(v):sel.delete(v));draw()};Q.oninput=draw;draw();
+b.querySelectorAll('[data-a]').forEach(x=>x.onclick=()=>{st.s={k,d:+x.dataset.a};closeGm();renderAll()});
+b.querySelector('#gmClr').onclick=()=>{delete st.f[k];closeGm();renderAll()};
+b.querySelector('#gmOk').onclick=()=>{if(vals.every(v=>sel.has(v)))delete st.f[k];else st.f[k]=sel;closeGm();renderAll()}}
+function exportMenu(e,id,btn){e.stopPropagation();let st=gs(id),n=st.view.length,m=st.cfg.allRows().length;let b=placeGm(btn,`<button data-t="xlsx" data-all="0">Excel: current view (${n})</button><button data-t="xlsx" data-all="1">Excel: full list (${m})</button><button data-t="pdf" data-all="0">PDF: current view (${n})</button><button data-t="pdf" data-all="1">PDF: full list (${m})</button>`);b.querySelectorAll('button').forEach(x=>x.onclick=()=>{closeGm();gridExport(id,x.dataset.t,x.dataset.all==='1')})}
+function loadJs(u){return new Promise((ok,no)=>{let s=document.createElement('script');s.src=u;s.onload=ok;s.onerror=()=>no(new Error('Could not load the PDF library. Check your internet.'));document.head.appendChild(s)})}
+async function gridExport(id,type,all){let st=gs(id),cfg=st.cfg,cols=cfg.cols.filter(c=>c.v),rows=all?cfg.allRows():st.view;if(!rows.length){alert('No data to export.');return}
+let titles=cols.map(c=>c.t),data=rows.map(r=>cols.map(c=>{let v=(c.ev||c.v)(r);return v==null?'':v}));let name=`APMS_${cfg.name}_${all?'full':'filtered'}_${todayISO()}`;
+if(type==='xlsx'){let ws=XLSX.utils.aoa_to_sheet([titles,...data]);ws['!cols']=titles.map((t,i)=>({wch:Math.min(42,Math.max(t.length,...data.slice(0,200).map(r=>String(r[i]).length))+2)}));let wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Report');XLSX.writeFile(wb,name+'.xlsx');return}
+try{if(!window.jspdf){await loadJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js');await loadJs('https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js')}}catch(e){alert(e.message);return}
+let fl=all?'No filters (full list)':[cfg.ctx?cfg.ctx():'',...Object.keys(st.f).map(k=>{let c=cfg.cols.find(c=>c.k===k),v=[...st.f[k]];return c.t+': '+v.slice(0,4).join(', ')+(v.length>4?' +'+(v.length-4):'')})].filter(Boolean).join(' | ')||'No filters';
+let doc=new window.jspdf.jsPDF({orientation:'landscape',unit:'pt',format:'a4'}),cl=t=>String(t).replace(/[–—]/g,'-').replace(/→/g,'>');
+doc.setFontSize(13);doc.text('APMS - '+cfg.title,28,30);doc.setFontSize(8);doc.text(cl(`${todayISO()} | ${rangeLabel()} | ${rows.length} rows | ${fl}`),28,44,{maxWidth:780});
+doc.autoTable({head:[titles.map(cl)],body:data.map(r=>r.map(cl)),startY:56,styles:{fontSize:7,cellPadding:3},headStyles:{fillColor:[20,36,58]},margin:{left:28,right:28}});doc.save(name+'.pdf')}
+const APP_COLS=[{k:'ref',t:'Reference No.',v:x=>x.ref},{k:'app',t:'Applicant',v:x=>x.applicant},{k:'form',t:'Form',v:x=>FORM_LABEL[x.form]||x.form},{k:'part',t:'Part',v:x=>x.partNo},{k:'status',t:'Current status',v:x=>x.status},
+{k:'level',t:'Pending at',v:x=>x.level||'Unknown',h:x=>`<span class="badge ${(x.level||'').toLowerCase()}">${esc(x.level||'Unknown')}</span>`},
+{k:'days',t:'Pending days',v:x=>x.pendingDays??'',h:x=>x.ageMissing?'<span title="Stage date not present in source Excel">Date needed</span>':ageChip(x.pendingDays)},
+{k:'asg',t:'Assigned to BLO',v:x=>x.assignedDate||x.pendingSince||'',ev:x=>ddmmyyyy(x.assignedDate||x.pendingSince),h:x=>ddmmyyyy(x.assignedDate||x.pendingSince)},
+{k:'blo',t:'BLO',v:x=>bloNameOf(x)},
+{k:'aero',t:'AERO action',v:x=>x.aeroStatus||'',h:x=>`<select data-ref="${esc(x.ref)}" onchange="setAero(this,'aeroStatus')">${(AERO_OPTS.includes(x.aeroStatus||'')?AERO_OPTS:[...AERO_OPTS,x.aeroStatus]).map(o=>`<option value="${esc(o)}"${o===(x.aeroStatus||'')?' selected':''}>${o||'Select action'}</option>`).join('')}</select>`},
+{k:'rem',t:'Remarks',v:x=>x.remarks||'',h:x=>`<input data-ref="${esc(x.ref)}" value="${esc(x.remarks||'')}" placeholder="Add remark" onchange="setAero(this,'remarks')" style="min-width:150px;padding:6px;border:1px solid #d0d5dd;border-radius:6px">`}];
+const APP_CFG={name:'Applications',title:'Application pendency',cols:APP_COLS,allRows:()=>appsFiltered('ALL','ALL').slice().sort((x,y)=>(y.pendingDays??-1)-(x.pendingDays??-1)),ctx:()=>{let f=document.getElementById('appForm').value,l=document.getElementById('appLevel').value,q=document.getElementById('appSearch').value;return [f!=='ALL'?'Form: '+f:'',l!=='ALL'?'Level: '+l:'',q?'Search: '+q:''].filter(Boolean).join(' | ')}};
+function renderApplications(){let form=document.getElementById('appForm').value,level=document.getElementById('appLevel').value,q=document.getElementById('appSearch').value.toLowerCase();let a=appsFiltered(form,level).filter(x=>[x.ref,x.applicant,x.partNo,bloNameOf(x)].join(' ').toLowerCase().includes(q)).sort((x,y)=>(y.pendingDays??-1)-(x.pendingDays??-1));let v=renderGrid('apps',APP_CFG,a,document.getElementById('appHead'),document.getElementById('appRows'),1000);document.getElementById('appEmpty').classList.toggle('hidden',v.length>0);clrLabel('apps','appClr')}
+function remN(key){let t=db.reminders[key];return t?daysBetween(localISO(new Date(t))):9999}
+function decBlo(g){g.remN=remN(g.key);g.remText=remindedText(g.key);return g}
+const BLO_COLS=[{k:'name',t:'BLO name',v:g=>g.name,h:g=>`<a class="link" onclick="openBloDetail('${esc(g.key)}')">${esc(g.name)}</a>`},{k:'mob',t:'Mobile',v:g=>g.mobile||'',h:g=>esc(g.mobile||'—')},{k:'part',t:'Part No.',v:g=>g.part},{k:'b',t:'BLO pending',v:g=>g.BLO,h:g=>`<b>${g.BLO}</b>`},{k:'old',t:'Oldest (days)',v:g=>g.oldest},{k:'o7',t:'> 7 days',v:g=>g.over7},{k:'rem',t:'Last reminded',v:g=>g.remText,sv:g=>g.remN},{k:'a',t:'AERO pending',v:g=>g.AERO},{k:'e',t:'ERO pending',v:g=>g.ERO},{k:'t',t:'Total linked',v:g=>g.total},
+{k:'ct',t:'Contact',nf:1,h:g=>`<div class="actions"><button class="btn secondary" onclick="callBlo('${esc(g.mobile)}','${esc(g.key)}')">Call</button><button class="btn secondary" onclick="whatsappBlo('${esc(g.key)}','${document.getElementById('bloForm').value}')">WhatsApp</button></div>`}];
+const BLO_CFG={name:'BLO_report',title:'BLO-wise report',cols:BLO_COLS,allRows:()=>groupBlo(appsFiltered('ALL')).map(decBlo),ctx:()=>{let f=document.getElementById('bloForm').value,q=document.getElementById('bloSearch').value;return [f!=='ALL'?'Form: '+f:'',q?'Search: '+q:''].filter(Boolean).join(' | ')}};
+function renderBloPage(){let form=document.getElementById('bloForm').value,q=document.getElementById('bloSearch').value.toLowerCase();let g=groupBlo(appsFiltered(form)).map(decBlo).filter(x=>(x.name+' '+x.part).toLowerCase().includes(q));let v=renderGrid('blo',BLO_CFG,g,document.getElementById('bloHead'),document.getElementById('bloRows'),1000);document.getElementById('bloEmpty').classList.toggle('hidden',v.length>0);clrLabel('blo','bloClr')}
+function logState(M,r){let a=M.get(r);if(!a)return['Cleared','Not in latest list'];if(a.level==='BLO')return['Pending',(a.pendingDays??'—')+' days at BLO'];return['Cleared',a.level==='DISPOSED'?'Closed':'Moved to '+a.level]}
+function logSummary(){let M=new Map(db.apps.map(a=>[a.ref,a])),mp={};(db.reminderlog||[]).forEach(e=>{let g=mp[e.key]||(mp[e.key]={key:e.key,name:e.name||'BLO not mapped',part:e.part,n:0,last:'',refs:new Set(),clr:new Set()});g.n++;if(e.date>g.last)g.last=e.date;(e.items||[]).forEach(it=>{g.refs.add(it.r);if(logState(M,it.r)[0]==='Cleared')g.clr.add(it.r)})});return Object.values(mp).map(g=>({name:g.name,part:g.part,key:g.key,n:g.n,last:g.last?ddmmyyyy(localISO(new Date(g.last))):'',listed:g.refs.size,cleared:g.clr.size,pending:g.refs.size-g.clr.size,pct:g.refs.size?Math.round(g.clr.size*100/g.refs.size):0})).sort((a,b)=>b.pending-a.pending)}
+const LOG_COLS=[{k:'name',t:'BLO',v:g=>g.name},{k:'part',t:'Part',v:g=>g.part},{k:'n',t:'Reminders',v:g=>g.n},{k:'last',t:'Last reminder',v:g=>g.last},{k:'listed',t:'Forms reminded',v:g=>g.listed},{k:'cl',t:'Cleared',v:g=>g.cleared,h:g=>`<b style="color:#087443">${g.cleared}</b>`},{k:'pe',t:'Still pending',v:g=>g.pending,h:g=>`<b style="color:#b42318">${g.pending}</b>`},{k:'pc',t:'% cleared',v:g=>g.pct,h:g=>g.pct+'%'}];
+const LOG_CFG={name:'Reminder_performance',title:'BLO performance after reminders',cols:LOG_COLS,allRows:()=>logSummary(),ctx:()=>''};
+function renderLog(){let sel=document.getElementById('logBlo');if(!sel)return;let cur=sel.value,keys={};(db.reminderlog||[]).forEach(e=>keys[e.key]=(e.name||'BLO')+' (Part '+e.part+')');let opt='<option value="">All BLOs</option>'+Object.keys(keys).map(k=>`<option value="${esc(k)}">${esc(keys[k])}</option>`).join('');if(sel.dataset.o!==opt){sel.innerHTML=opt;sel.dataset.o=opt;sel.value=cur}
+let key=sel.value,M=new Map(db.apps.map(a=>[a.ref,a])),E=(db.reminderlog||[]).filter(e=>!key||e.key===key);
+let sm=logSummary().filter(g=>!key||g.key===key),v=renderGrid('logsum',LOG_CFG,sm,document.getElementById('logHead'),document.getElementById('logRows'),500);document.getElementById('logEmpty').classList.toggle('hidden',sm.length>0);clrLabel('logsum',null);
+let days={};E.slice(0,80).forEach(e=>{let d=localISO(new Date(e.date));(days[d]=days[d]||[]).push(e)});
+document.getElementById('logDays').innerHTML=Object.keys(days).sort().reverse().map(d=>`<h3 style="margin:14px 0 4px;font-size:14px">${ddmmyyyy(d)}</h3>`+days[d].map(e=>{let it=e.items||[],c=it.filter(i=>logState(M,i.r)[0]==='Cleared').length,t=new Date(e.date).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});return `<details class="logd"><summary><b>${esc(e.name||'BLO')}</b> (Part ${esc(e.part)}) · ${esc(e.channel)} · ${t} · ${it.length} forms · <span style="color:#087443">${c} cleared</span> · <span style="color:#b42318">${it.length-c} pending</span></summary><table class="logt"><thead><tr><th>Form no.</th><th>Applicant</th><th>Status now</th></tr></thead><tbody>${it.map(i=>{let s=logState(M,i.r);return `<tr><td>${esc(i.r)}</td><td>${esc(i.n)}</td><td><span class="chip ${s[0]==='Cleared'?'b0':'b3'}">${s[0]}</span> ${esc(s[1])}</td></tr>`}).join('')}</tbody></table></details>`}).join('')).join('')||'<p class="small">No reminders in the log yet.</p>'}
+function exportLog(){let M=new Map(db.apps.map(a=>[a.ref,a])),key=document.getElementById('logBlo').value,rows=[];(db.reminderlog||[]).filter(e=>!key||e.key===key).forEach(e=>{let dt=new Date(e.date);(e.items||[]).forEach(i=>{let s=logState(M,i.r);rows.push({Date:ddmmyyyy(localISO(dt)),Time:dt.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),BLO:e.name,Part:e.part,Channel:e.channel,'Form no.':i.r,Applicant:i.n,'Status now':s[0],Detail:s[1]})})});downloadXlsx(rows,'APMS_Reminder_Log_'+todayISO()+'.xlsx')}
+function openBloDetail(key){showPage('blo');let [ac,part]=key.split('|'),a=appsFiltered(document.getElementById('bloForm')?.value||'ALL').filter(x=>String(x.partNo)===part&&(!ac||ac==='unknown'||!x.acNo||String(x.acNo)===ac));let g=groupBlo(a)[0]||{name:'BLO',part};let box=document.getElementById('bloDetail');box.classList.remove('hidden');box.innerHTML=`<div class="panel-head"><h2>${esc(g.name)} – Part ${esc(part)}</h2><button class="btn secondary" onclick="document.getElementById('bloDetail').classList.add('hidden')">Close</button></div><div class="panel-body"><div class="kpirow"><span>BLO pending: ${a.filter(x=>x.level==='BLO').length}</span><span>AERO pending: ${a.filter(x=>x.level==='AERO').length}</span><span>ERO pending: ${a.filter(x=>x.level==='ERO').length}</span></div><div class="table-wrap" style="margin-top:12px"><table><thead><tr><th>Reference</th><th>Applicant</th><th>Form</th><th>Status</th><th>Pending level</th><th>Pending days</th></tr></thead><tbody>${a.slice().sort((x,y)=>(y.level==='BLO')-(x.level==='BLO')||(y.pendingDays??-1)-(x.pendingDays??-1)).map(x=>`<tr><td>${esc(x.ref)}</td><td>${esc(x.applicant)}</td><td>${esc(FORM_LABEL[x.form])}</td><td>${esc(x.status)}</td><td>${esc(x.level)}</td><td>${x.ageMissing?'Date needed':ageChip(x.pendingDays)}</td></tr>`).join('')}</tbody></table></div></div>`;box.scrollIntoView({behavior:'smooth'})}
+function renderMaster(){document.getElementById('masterRows').innerHTML=db.blos.map((b,i)=>`<tr><td>${esc(b.name)}</td><td>${esc(b.mobile)}</td><td>${esc(b.acNo)}</td><td>${esc(b.partNo)}</td><td><div class="actions"><button class="btn secondary" onclick="editBlo(${i})">Edit</button><button class="btn danger" onclick="deleteBlo(${i})">Delete</button></div></td></tr>`).join('');document.getElementById('masterEmpty').classList.toggle('hidden',db.blos.length>0)}
+function renderHistory(){document.getElementById('historyRows').innerHTML=db.history.map(h=>`<tr><td>${new Date(h.date).toLocaleString('en-IN')}</td><td>${esc(FORM_LABEL[h.form])}</td><td>${esc(h.file)}</td><td>${h.rows}</td><td>${h.added}</td><td>${h.updated}</td><td>${h.skipped}</td></tr>`).join('');document.getElementById('historyEmpty').classList.toggle('hidden',db.history.length>0)}
+function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.add('hidden'));document.getElementById('page-'+p).classList.remove('hidden');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===p));document.getElementById('pageTitle').textContent=({dashboard:'Dashboard',applications:'Application Pendency',blo:'BLO-wise Report',upload:'Excel Upload',master:'BLO Master',history:'Import History',settings:'Settings & Data',log:'Reminder Log'})[p];if(p==='blo')renderBloPage();if(p==='log')renderLog()}
+document.querySelectorAll('.nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+function openBloModal(i=-1){let b=i>=0?db.blos[i]:{name:'',mobile:'',acNo:'217',partNo:''};document.getElementById('modalRoot').innerHTML=`<div class="modal-back" onclick="if(event.target===this)this.innerHTML='' "><div class="modal"><h2>${i>=0?'Edit BLO':'Add BLO'}</h2><div class="form-grid"><div class="field"><label>BLO Name *</label><input id="mName" value="${esc(b.name)}"></div><div class="field"><label>Mobile Number</label><input id="mMobile" value="${esc(b.mobile)}"></div><div class="field"><label>AC No.</label><input id="mAc" value="${esc(b.acNo)}"></div><div class="field"><label>Part No. *</label><input id="mPart" value="${esc(b.partNo)}"></div></div><div class="modal-actions"><button class="btn secondary" onclick="document.getElementById('modalRoot').innerHTML=''">Cancel</button><button class="btn" onclick="saveBlo(${i})">Save BLO</button></div></div></div>`}
+function editBlo(i){openBloModal(i)}function saveBlo(i){let b={name:document.getElementById('mName').value.trim(),mobile:document.getElementById('mMobile').value.trim(),acNo:document.getElementById('mAc').value.trim(),partNo:document.getElementById('mPart').value.trim()};if(!b.name||!b.partNo){alert('BLO name and Part No. are required.');return}let duplicate=db.blos.findIndex((x,j)=>j!==i&&x.partNo===b.partNo&&x.acNo===b.acNo);if(duplicate>=0){alert('This AC/Part mapping already exists.');return}if(i>=0)db.blos[i]=b;else db.blos.push(b);document.getElementById('modalRoot').innerHTML='';saveDB()}
+function deleteBlo(i){if(confirm('Delete this BLO master entry? Applications will remain in the database.')){db.blos.splice(i,1);saveDB()}}
+function callBlo(m,key){if(!m){alert('Mobile number is not available in BLO Master.');return}if(key)markReminded(key,'Call',pendingItems(key));location.href='tel:'+m.replace(/[^0-9+]/g,'')}
+function whatsappBlo(key,form){let [ac,part]=key.split('|');let a=appsFiltered(form).filter(x=>String(x.partNo)===part&&(!ac||ac==='unknown'||!x.acNo||String(x.acNo)===ac));let b=db.blos.find(x=>String(x.partNo)===part&&(!x.acNo||!ac||String(x.acNo)===ac));let mob=(b?.mobile||'').replace(/\D/g,'');if(!mob){alert('Add the BLO mobile number in BLO Master first.');return}if(mob.length===10)mob='91'+mob;let dt=x=>x.assignedDate||x.pendingSince||'',p=a.filter(x=>x.level==='BLO').sort((x,y)=>String(dt(x)).localeCompare(String(dt(y))));if(!p.length){alert('Nothing is pending at BLO level for this Part No.');return}let T=getTpl(),L=p.slice(0,20);let list=L.map((x,i)=>{let d=dt(x)?daysBetween(dt(x)):null;return fillTpl(T.line,{no:i+1,ref:x.ref,form:FORM_LABEL[x.form].split(' – ')[0],applicant:x.applicant||'—',assigned:ddmmyyyy(dt(x)),days:d==null?'n/a':d})}).join('\n')+(p.length>L.length?`\n...and ${p.length-L.length} more (oldest first)`:'');let text=fillTpl(T.msg,{name:b.name,part,count:p.length,list});markReminded(key,'WhatsApp',p.map(x=>({r:x.ref,n:x.applicant||''})));window.open(`https://wa.me/${mob}?text=${encodeURIComponent(text)}`,'_blank')}
+function exportCurrent(){let form=document.getElementById('appForm')?.value||currentForm(),level=document.getElementById('appLevel')?.value||'ALL';let list=appsFiltered(form,level);downloadXlsx(list,'APMS_Application_Report.xlsx')}
+function exportBloReport(){let list=groupBlo(appsFiltered(document.getElementById('bloForm').value));downloadXlsx(list,'APMS_BLO_Report.xlsx')}
+function downloadXlsx(rows,name){if(!rows.length){alert('No data to export.');return}let ws=XLSX.utils.json_to_sheet(rows),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Report');XLSX.writeFile(wb,name)}
+function downloadBackup(){let blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='APMS_Backup_'+todayISO()+'.json';a.click();URL.revokeObjectURL(a.href)}
+function restoreBackup(input){let f=input.files[0];if(!f)return;let r=new FileReader();r.onload=()=>{try{let x=JSON.parse(r.result);if(!Array.isArray(x.apps)||!Array.isArray(x.blos)||!Array.isArray(x.history))throw Error('Invalid backup structure');if(window.cloud?.active&&!confirm('Restore will REPLACE all cloud data with this backup. Continue?'))return;db=x;db.reminders=db.reminders||{};db.reminderlog=db.reminderlog||[];saveDB();alert('Backup restored.')}catch(e){alert('Restore failed: '+e.message)}};r.readAsText(f)}
+function clearAllData(){if(window.cloud?.active){alert('Clearing is disabled in cloud mode. Use the JSON backup, or delete data in the Firebase console.');return}if(confirm('This will permanently clear APMS data stored in this browser. Download a backup first. Continue?')){db={apps:[],blos:[],history:[],reminders:{}};saveDB()}}
+renderAll();
+syncRangeUI();syncTplUI();
+</script>
 <script type="module">
-import {initializeApp,deleteApp} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import {getAuth,signInWithEmailAndPassword,signOut,onAuthStateChanged,createUserWithEmailAndPassword,EmailAuthProvider,reauthenticateWithCredential,updatePassword} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore,collection,doc,setDoc,deleteDoc,deleteField,onSnapshot,writeBatch} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-const firebaseConfig={apiKey:"AIzaSyAJx5qpy_bDqm9uC2xMOJ78my0A_k_r8xk",authDomain:"ramnagar-ii-vbdc-monitoring.firebaseapp.com",projectId:"ramnagar-ii-vbdc-monitoring",storageBucket:"ramnagar-ii-vbdc-monitoring.firebasestorage.app",messagingSenderId:"993886379763",appId:"1:993886379763:web:f2cdfe40ea7aa2f242a186"};
-const fapp=initializeApp(firebaseConfig),auth=getAuth(fapp),fdb=getFirestore(fapp);
-const ADMIN='8910554091',DOM='@vbdc-ramnagar.app',DEFPW='Admin@123',CC='91';
-const ROLES={block:'Block Level Nodal Officer',dealing:'Block Level Dealing Official',gp:'GP Level Nodal Officer',bst:'VBDC Supervisor',sur:'VBDC Surveyor'};
-const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const iso=d=>d.toLocaleDateString('en-CA');
-const today=()=>iso(new Date());
-const addDays=(s,n)=>{const d=new Date(s+'T00:00:00');d.setDate(d.getDate()+n);return iso(d)};
-const DEFMSG='Hello {name}, your survey count for {date} was {count} (average {avg} per day). Your name appeared in the poor performance list {poorFN} time(s) and in the average below {limit} list {lowFN} time(s) in this fortnight ({fn}). Please improve your daily survey work. - Block Nodal Officer';
-const DEFGMSG='Dear all, please improve your daily survey work and upload your reports on time. - Bappaditya Roy, Block Nodal Officer';
-const DEFSMSG='Hello {name}, the survey report for {date} has not been uploaded yet. Please upload it today. - Bappaditya Roy, Block Nodal Officer';
-const SPA=[['pe','Perennial Spots','No of Perennial Spots Cleanliness Activity'],['mk','Market','No of Market Cleanliness Activity'],['sc','School','No of School Cleanliness Activity'],['ic','ICDS','No of ICDS Cleanliness Activity'],['hc','Health Centre','No of Health Centre Cleanliness Activity'],['go','Govt. Office','No of Government office Cleanliness Activity']];
-const DEFSPMSG='Hello {name}, the special activity report for {date} has not been uploaded yet. Please upload it today. - Bappaditya Roy, Block Nodal Officer';
-const defDash=()=>({days:15,target:0,label:'Today survey count',avgMin:20,msg:DEFMSG,smsg:DEFSMSG,spmsg:DEFSPMSG});
-const fillMsg=(n,v,t)=>{const tpl=t||cfg.dash.msg||DEFMSG,z=x=>x===undefined?'':x;
-  let m=tpl.replace(/\{name\}/g,n).replace(/\{date\}/g,z(v.date)).replace(/\{count\}/g,z(v.count)).replace(/\{avg\}/g,z(v.avg)).replace(/\{limit\}/g,z(v.limit)).replace(/\{fn\}/g,z(v.fn)).replace(/\{badFN\}/g,z(v.badFN)).replace(/\{badAll\}/g,z(v.badAll)).replace(/\{poorFN\}/g,z(v.poorFN)).replace(/\{poorAll\}/g,z(v.poorAll)).replace(/\{lowFN\}/g,z(v.lowFN)).replace(/\{lowAll\}/g,z(v.lowAll)).replace(/\{topFN\}/g,z(v.topFN)).replace(/\{topAll\}/g,z(v.topAll));
-  if(v.badFN!==undefined&&!/\{(badFN|badAll|poorFN|poorAll|lowFN|lowAll)\}/.test(tpl))m+=' Your name appeared in the poor performance list '+v.poorFN+' time(s) and in the average below '+v.limit+' list '+v.lowFN+' time(s) in this fortnight ('+v.fn+').';
-  return m};
-let editU=null,fmsg='',spOk='';
-let cfg={users:[],dash:defDash()},reports={},me=null,tab='',vDate=today(),msg='',umsg='',emsg='',rSup='',lp='',ready=false,dirty=false,unsubs=[],boot=false;
-const sups=()=>cfg.users.filter(u=>u.role==='bst');
-const gpName=u=>{if(!u)return'';if(u.gp)return u.gp;const d=u.desig||'',i=d.indexOf('-');return i>0?d.slice(i+1).trim():u.name};
-const team=sp=>cfg.users.filter(u=>u.role==='sur'&&u.sup===sp);
-const val=e=>+e.a||0;
-const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-const fortStart=d=>d.slice(0,8)+(+d.slice(8,10)<=15?'01':'16');
-const fortLabel=d=>{const first=+d.slice(8,10)<=15,last=new Date(+d.slice(0,4),+d.slice(5,7),0).getDate();return (first?'1-15 ':'16-'+last+' ')+MON[+d.slice(5,7)-1]};
-const fort=(sp,p,d)=>{const f=fortStart(d);let s=0;Object.values(reports).forEach(r=>{if(r.sup===sp&&r.date>=f&&r.date<=d){const e=(r.entries||[]).find(x=>x.p===p);if(e)s+=val(e)}});return s};
-const saveCfg=()=>setDoc(doc(fdb,'settings','main'),{dash:cfg.dash}).catch(()=>{});
-const refresh=()=>{if(me&&!dirty)draw()};
-
-onAuthStateChanged(auth,u=>{
-  unsubs.forEach(f=>f());unsubs=[];me=null;boot=false;dirty=false;cfg={users:[],dash:defDash()};reports={};
-  if(!u){ready=true;draw();return}
-  const ph=(u.email||'').split('@')[0],bad=()=>{msg='This number is not registered. Contact the Block Nodal Officer.';signOut(auth)};
-  unsubs.push(onSnapshot(collection(fdb,'users'),sn=>{
-    cfg.users=sn.docs.map(d=>d.data());
-    const m=cfg.users.find(x=>x.phone===ph&&x.role!=='sur'),was=me;
-    if(m){me=m;if(ph===ADMIN&&m.name==='Block Nodal Officer'&&!boot){boot=true;setDoc(doc(fdb,'users',ADMIN),{...m,name:'Bappaditya Roy'}).catch(()=>{})}}
-    else if(ph===ADMIN){me={role:'block',name:'Block Nodal Officer',phone:ADMIN,desig:ROLES.block};
-      if(!boot){boot=true;setDoc(doc(fdb,'users',ADMIN),{role:'block',name:'Bappaditya Roy',desig:ROLES.block,phone:ADMIN}).catch(()=>{})}}
-    else return bad();
-    ready=true;if(!was){tab='';dirty=false}refresh();
-  },bad));
-  unsubs.push(onSnapshot(doc(fdb,'settings','main'),d=>{if(d.exists()&&d.data().dash)cfg.dash={...defDash(),...d.data().dash};refresh()},()=>{}));
-  unsubs.push(onSnapshot(collection(fdb,'reports'),sn=>{reports={};sn.docs.forEach(d=>{if(d.data().v===2)reports[d.id]=d.data()});refresh()},()=>{}));
-});
-
-function draw(){
-  const a=document.getElementById('app');
-  if(!ready){a.innerHTML='<div class="login"><div class="logo">📊</div><p class="mu">Loading…</p></div>';return}
-  if(!me){dirty=false;a.innerHTML=loginView();bindLogin();return}
-  const T={bst:[['entry','Daily entry'],['sp','Special activity'],['dash','Dashboard']],gp:[['dash','Dashboard']],dealing:[['dash','Dashboard'],['bulk','Bulk message']],
-    block:[['dash','Dashboard'],['bulk','Bulk message'],['users','Users'],['reports','Reports'],['format','Format']]}[me.role].concat([['pw','Password']]);
-  if(!tab||!T.find(t=>t[0]===tab))tab=T[0][0];
-  const sp=tab==='reports'?(rSup||(sups()[0]||{}).phone):me.phone;
-  a.innerHTML=`<div class="banner"><div><h1>VBDC MONITORING, RAMNAGAR-II</h1><div class="sub">${esc(me.name)} · ${ROLES[me.role]}</div></div><button id="out">Log out</button></div>
-  <div class="tabs">${T.map(t=>`<button class="${tab===t[0]?'on':''}" data-t="${t[0]}">${t[1]}</button>`).join('')}</div>
-  ${tab==='entry'?entryView(sp,false):tab==='sp'?spView(sp,false,true):tab==='reports'?msgView()+entryView(sp,true)+spView(sp,true,false):tab==='dash'?dashView():tab==='users'?usersView():tab==='bulk'?bulkView():tab==='pw'?pwView():formatView()}
-  <div class="mu" style="text-align:center;padding:16px 0 8px">App version 13 · average-below fix</div>`;
-  document.getElementById('out').onclick=()=>{Q=null;renderQ();signOut(auth)};
-  a.querySelectorAll('[data-t]').forEach(b=>b.onclick=()=>{tab=b.dataset.t;umsg='';emsg='';spOk='';draw()});
-  if(tab==='entry'||tab==='reports')bindEntry(sp,tab==='reports');if(tab==='sp')bindSp(sp,false,true);if(tab==='reports'){bindMsg();bindSp(sp,true,false)}
-  if(tab==='dash'){document.getElementById('dt').onchange=e=>{vDate=e.target.value||today();draw()};const f=document.getElementById('fr');if(f)f.onchange=e=>{cfg.dash.from=e.target.value;saveCfg();draw()};const sfi=document.getElementById('sf');if(sfi)sfi.onchange=e=>{cfg.dash.spFrom=e.target.value;saveCfg();draw()};const cb=document.getElementById('ctb');if(cb)cb.onclick=()=>{contactOn=!contactOn;try{localStorage.setItem('contactOn',contactOn?'1':'0')}catch(e){}draw()};a.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>dl(b.dataset.x,b.dataset.f));a.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{const i=b.dataset.h;hid.has(i)?hid.delete(i):hid.add(i);try{localStorage.setItem('hid',JSON.stringify([...hid]))}catch(e){}draw()});a.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const d=QD[b.dataset.q];if(!d)return;Q={title:d.title,ch:'wa',group:cfg.dash.gmsg||DEFGMSG,items:d.items.map(x=>({...x,done:false}))};renderQ()})}
-  if(tab==='bulk')bindBulk();if(tab==='users')bindUsers();if(tab==='format')bindFormat();if(tab==='pw')bindPw();
-  dirty=false;a.oninput=()=>{dirty=true};
-}
-
-// ---------- Login ----------
-function loginView(){
-  return `<div class="login"><div class="logo">📊</div><h1>VBDC MONITORING, RAMNAGAR-II</h1><p class="mu">Log in with your mobile number and password.</p>
-  <input id="ph" type="tel" inputmode="numeric" maxlength="10" placeholder="Mobile number (your ID)" class="full" value="${esc(lp)}">
-  <input id="pw" type="password" placeholder="Password" class="full"><button id="go" class="full">Log in</button>
-  <p class="bad">${esc(msg)}</p><div class="note">You stay logged in on this phone until you tap Log out. Forgot your password? Ask the Block Nodal Officer.</div></div>`;
-}
-function bindLogin(){
-  const g=id=>document.getElementById(id);
-  const go=async()=>{const p=g('ph').value.trim();lp=p;
-    if(!/^\d{10}$/.test(p)||!g('pw').value){msg='Enter your 10-digit mobile number and password.';draw();return}
-    g('go').disabled=true;g('go').textContent='Logging in…';
-    try{await signInWithEmailAndPassword(auth,p+DOM,g('pw').value);msg=''}
-    catch(e){msg=e.code==='auth/network-request-failed'?'No internet connection.':'Wrong mobile number or password.';draw()}};
-  g('go').onclick=go;g('pw').onkeydown=e=>{if(e.key==='Enter')go()};
-}
-
-// ---------- Messages (admin) ----------
-function msgView(){
-  return `<div class="card"><h2>Messages for WhatsApp / SMS</h2><p class="mu">Typed into WhatsApp or SMS when you tap 💬 or ✉️. You can use {name}, {date}, {count}, {avg}, {limit}, {fn}, {poorFN} (times in the poorest-10 list this fortnight), {lowFN} (times in the average-below-limit list this fortnight), {badFN} (both added together); add All instead of FN for since inception. The app fills them in for each person.</p>
-  <b>To surveyors</b><textarea id="mt" rows="4" class="full" style="margin:4px 0 10px">${esc(cfg.dash.msg||DEFMSG)}</textarea>
-  <b>To supervisors whose report is not uploaded</b><textarea id="mt2" rows="3" class="full" style="margin:4px 0 10px">${esc(cfg.dash.smsg||DEFSMSG)}</textarea>
-  <b>To supervisors whose special activity report is not uploaded</b><textarea id="mt3" rows="3" class="full" style="margin:4px 0 10px">${esc(cfg.dash.spmsg||DEFSPMSG)}</textarea>
-  <div class="row"><button id="ms" class="full">Save messages</button><button id="mr" class="g full">Use default messages</button></div><p id="mo" class="ok"></p></div>`;
-}
-function bindMsg(){
-  const g=id=>document.getElementById(id);
-  g('ms').onclick=()=>{cfg.dash.msg=g('mt').value.trim()||DEFMSG;cfg.dash.smsg=g('mt2').value.trim()||DEFSMSG;cfg.dash.spmsg=g('mt3').value.trim()||DEFSPMSG;saveCfg();g('mo').textContent='Saved ✓'};
-  g('mr').onclick=()=>{cfg.dash.msg=DEFMSG;cfg.dash.smsg=DEFSMSG;cfg.dash.spmsg=DEFSPMSG;saveCfg();g('mt').value=DEFMSG;g('mt2').value=DEFSMSG;g('mt3').value=DEFSPMSG;g('mo').textContent='Default messages restored ✓'};
-}
-
-// ---------- Password ----------
-function pwView(){
-  return `<div class="card"><h2>Change password</h2>
-  <input id="p0" type="password" class="full" placeholder="Current password" style="margin-bottom:8px">
-  <input id="p1" type="password" class="full" placeholder="New password (at least 6 characters)" style="margin-bottom:8px">
-  <input id="p2" type="password" class="full" placeholder="Type the new password again" style="margin-bottom:8px">
-  <button id="pb" class="full">Change password</button><p id="pm"></p></div>`;
-}
-function bindPw(){
-  const g=id=>document.getElementById(id),say=(t,ok)=>{g('pm').className=ok?'ok':'bad';g('pm').textContent=t};
-  g('pb').onclick=async()=>{
-    if(g('p1').value.length<6)return say('New password must be at least 6 characters.');
-    if(g('p1').value!==g('p2').value)return say('The two new passwords do not match.');
-    try{await reauthenticateWithCredential(auth.currentUser,EmailAuthProvider.credential(auth.currentUser.email,g('p0').value));
-      await updatePassword(auth.currentUser,g('p1').value);say('✓ Password changed.',true);['p0','p1','p2'].forEach(i=>g(i).value='')}
-    catch(e){say(e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'?'Current password is wrong.':'Could not change password. Try again.')}};
-}
-
-// ---------- Entry (supervisor) / Report database (admin) ----------
-function entryView(sp,adm){
-  if(!sp)return '<div class="card">No supervisors found. Upload users first (Users tab).</div>';
-  const sv=sups(),rid=vDate+'_'+sp,rep=reports[rid],tm=team(sp),D=cfg.dash;
-  const get=p=>(rep&&(rep.entries||[]).find(e=>e.p===p))||{};
-  return `<div class="card"><div class="row sp"><h2>${adm?'Report database':'Daily report'}</h2><input type="date" id="dt" value="${vDate}" max="${today()}"></div>
-  ${adm?`<select id="ss" class="full" style="margin-bottom:8px">${sv.map(s=>`<option value="${s.phone}" ${s.phone===sp?'selected':''}>${esc(gpName(s))} (${esc(s.name)})</option>`).join('')}</select>`:''}
-  <p class="mu">${rep&&rep.entries?'Saved earlier. You can edit and save again.':'Not yet submitted for this date.'}</p>
-  ${tm.length?`<div class="scroll"><table class="grid"><tr><th class="l">Surveyor</th><th>${esc(D.label)}</th><th>Cumulative report for this fortnight<div class="mu" style="text-transform:none;font-weight:400">(${fortLabel(vDate)})</div></th></tr>
-  ${tm.map(u=>{const e=get(u.phone);return `<tr data-p="${u.phone}"><td class="l">${esc(u.name)}</td><td><input type="number" class="pv" min="0" value="${e.a??''}"></td><td class="sc">${fort(sp,u.phone,vDate)}</td></tr>`}).join('')}</table></div>
-  <button id="save" class="full" style="margin-top:12px">Save report</button>${adm&&rep&&rep.entries?'<button id="del" class="g full" style="margin-top:8px">Delete this report</button>':''}`:'<p class="mu">No surveyors are assigned to this supervisor yet.</p>'}<p id="ok" class="ok">${esc(emsg)}</p></div>`;
-}
-function bindEntry(sp,adm){
-  const g=id=>document.getElementById(id);
-  g('dt').onchange=e=>{vDate=e.target.value||today();emsg='';draw()};
-  if(g('ss'))g('ss').onchange=e=>{rSup=e.target.value;emsg='';draw()};
-  if(g('save'))g('save').onclick=async()=>{
-    const entries=[];
-    document.querySelectorAll('tr[data-p]').forEach(tr=>{const u=cfg.users.find(x=>x.phone===tr.dataset.p);
-      entries.push({p:u.phone,n:u.name,a:Math.max(0,Math.floor(+tr.querySelector('.pv').value||0))})});
-    const rid=vDate+'_'+sp,d={v:2,date:vDate,sup:sp,entries,by:me.name};
-    g('save').disabled=true;g('save').textContent='Saving…';
-    try{await setDoc(doc(fdb,'reports',rid),d,{merge:true});reports[rid]={...(reports[rid]||{}),...d};emsg='Saved ✓';dirty=false;draw()}
-    catch(e){g('save').disabled=false;g('save').textContent='Save report';g('ok').className='bad';g('ok').textContent='Could not save ('+(e.code||'error')+'). Check internet and try again.'}};
-  if(g('del'))g('del').onclick=async()=>{try{await setDoc(doc(fdb,'reports',vDate+'_'+sp),{entries:deleteField()},{merge:true});if(reports[vDate+'_'+sp])delete reports[vDate+'_'+sp].entries;emsg='';dirty=false;draw()}catch(e){}};
-}
-
-// ---------- Dashboard ----------
-const EXP={},QD={};
-let Q=null;
-function openLink(url){const a=document.createElement('a');a.href=url;a.target='_blank';a.rel='noopener';document.body.appendChild(a);a.click();a.remove()}
-function sendTo(x){const t=encodeURIComponent(x.msg);openLink(Q.ch==='wa'?`https://wa.me/${CC}${x.p}?text=${t}`:`sms:+${CC}${x.p}?body=${t}`);x.done=true;renderQ()}
-function renderQ(){
-  let o=document.getElementById('qov');
-  if(!Q){if(o)o.remove();return}
-  if(!o){o=document.createElement('div');o.id='qov';document.body.appendChild(o)}
-  const nxt=Q.items.findIndex(x=>!x.done),dn=Q.items.filter(x=>x.done).length;
-  o.innerHTML=`<div class="qbox"><div class="row sp"><b>📨 ${esc(Q.title)}</b><button class="g" id="qx">Close</button></div>
-  <div class="row" style="margin:10px 0"><button id="qwa" class="${Q.ch==='wa'?'':'g'}">WhatsApp</button><button id="qsm" class="${Q.ch==='sms'?'':'g'}">SMS</button></div>
-  <div class="mu">${dn} of ${Q.items.length} opened. Tap the big button, press Send in the app, then come back and tap it again.</div>
-  <div style="margin:10px 0 4px"><b>Or send one message to everyone at once</b></div>
-  <textarea id="qg" rows="3" class="full">${esc(Q.group||'')}</textarea>
-  <div class="row" style="margin:6px 0"><button id="qgs" class="full">📩 One SMS to all (${Q.items.length})</button></div>
-  <div class="row" style="margin-bottom:6px"><button id="qgn" class="g full">Copy all numbers</button><button id="qgm" class="g full">Copy message</button></div>
-  <div class="mu">One SMS goes to everyone as a group message. It cannot carry each person’s own name or numbers, and everyone can see the other numbers. For WhatsApp, copy the message and numbers, then use a WhatsApp group or broadcast list (the numbers must be saved in your contacts).</div>
-  <div class="qlist">${Q.items.map((x,i)=>`<div class="it"><div class="rk ${x.done?'best':'poor'}">${x.done?'✓':i+1}</div><div class="in"><div class="nm2">${esc(x.n)}</div><div class="mu">${esc(x.gp)} · ${x.p}</div></div><button class="s" data-qi="${i}" style="color:var(--ac)">Open</button></div>`).join('')}</div>
-  <button id="qn" class="full" ${nxt<0?'disabled':''}>${nxt<0?'All done ✓':'Open next: '+esc(Q.items[nxt].n)}</button></div>`;
-  o.querySelector('#qx').onclick=()=>{Q=null;renderQ()};
-  o.querySelector('#qwa').onclick=()=>{Q.ch='wa';renderQ()};
-  o.querySelector('#qsm').onclick=()=>{Q.ch='sms';renderQ()};
-  o.querySelector('#qn').onclick=()=>{if(nxt>=0)sendTo(Q.items[nxt])};
-  o.querySelectorAll('[data-qi]').forEach(b=>b.onclick=()=>sendTo(Q.items[+b.dataset.qi]));
-  const gt=()=>{Q.group=o.querySelector('#qg').value;return Q.group};
-  o.querySelector('#qg').oninput=e=>{Q.group=e.target.value};
-  o.querySelector('#qgs').onclick=()=>openLink('sms:'+Q.items.map(x=>'+'+CC+x.p).join(',')+'?body='+encodeURIComponent(gt()));
-  const cp=async(b,t)=>{try{await navigator.clipboard.writeText(t);b.textContent='Copied ✓'}catch(e){b.textContent='Could not copy'}};
-  o.querySelector('#qgn').onclick=e=>cp(e.target,Q.items.map(x=>x.p).join(', '));
-  o.querySelector('#qgm').onclick=e=>cp(e.target,gt());
-}
-const canC=()=>me.role==='block'||me.role==='dealing';
-let contactOn=(()=>{try{return localStorage.getItem('contactOn')==='1'}catch(e){return false}})();
-const hid=new Set((()=>{try{return JSON.parse(localStorage.getItem('hid')||'[]')}catch(e){return []}})());
-const ct=(p,n,v,tpl)=>{if(!canC()||!contactOn)return'';const t=encodeURIComponent(fillMsg(n,v,tpl));
-  return `<span class="ct"><a href="tel:+${CC}${p}" target="_blank" rel="noopener">📞</a><a href="https://wa.me/${CC}${p}?text=${t}" target="_blank" rel="noopener">💬</a><a href="sms:+${CC}${p}?body=${t}" target="_blank" rel="noopener">✉️</a></span>`};
-const lst=(items,k)=>{if(!items.length)return'<p class="mu" style="padding:8px 0">No data yet.</p>';const mx=Math.max(1,...items.map(x=>x.v));
-  return items.map((r,i)=>`<div class="it"><div class="rk ${k}">${i+1}</div><div class="in"><div class="nm2">${esc(r.n)}</div><div class="mu">${esc(r.sub)}</div><div class="mu">${esc(r.stat)}</div><div class="mu">${esc(r.stat2||'')}</div><div class="bar"><i class="${k}" style="width:${Math.max(3,Math.round(r.v/mx*100))}%"></i></div></div><div class="rt"><div class="sv ${k}${r.low?' low':''}">${r.v}</div>${r.c||''}</div></div>`).join('')};
-const sec=(k,title,sub,body,id)=>{const h=hid.has(id);
-  return `<div class="card sec"><div class="hd ${k}">${title}${sub?`<small>${sub}</small>`:''}</div><div class="bd"><div class="xb"><button class="g" data-h="${id}">${h?'Show details':'Hide details'}</button>${canC()&&contactOn&&QD[id]&&QD[id].items.length?`<button class="g" data-q="${id}">📨 Send to all (${QD[id].items.length})</button>`:''}${canC()&&EXP[id]?`<button class="g" data-x="${id}" data-f="xlsx">⬇ Excel</button><button class="g" data-x="${id}" data-f="pdf">⬇ PDF</button>`:''}</div>${h?'':body}</div></div>`};
-function dl(id,f){
-  const e=EXP[id];if(!e||!canC())return;
-  if(f==='xlsx'){if(typeof XLSX==='undefined')return alert('Excel library could not load.');
-    const ws=XLSX.utils.aoa_to_sheet([[e.title],[e.sub],[],e.head,...e.rows]),wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Report');XLSX.writeFile(wb,e.fname+'.xlsx')}
-  else{if(!window.jspdf)return alert('PDF library could not load.');
-    const d=new window.jspdf.jsPDF({unit:'pt',format:'a4'});d.setFontSize(13);d.text(e.title,40,40);d.setFontSize(9);d.text(e.sub,40,56);
-    d.autoTable({head:[e.head],body:e.rows,startY:70,styles:{fontSize:8},headStyles:{fillColor:[232,121,26]}});d.save(e.fname+'.pdf')}
-}
-function dashView(){
-  const D=cfg.dash,adm=me.role==='block',pv=canC(),on=pv&&contactOn,N=10,from=D.from||addDays(today(),-14),per=from+' to '+vDate;
-  Object.keys(EXP).forEach(k=>delete EXP[k]);Object.keys(QD).forEach(k=>delete QD[k]);
-  const st={};
-  cfg.users.filter(u=>u.role==='sur').forEach(u=>{const s=cfg.users.find(x=>x.phone===u.sup);st[u.phone]={p:u.phone,n:u.name,gp:s?gpName(s):'-',today:null,s:0,c:0,si:0,ci:0}});
-  Object.values(reports).forEach(r=>(r.entries||[]).forEach(e=>{const x=st[e.p];if(!x)return;const v=val(e);
-    if(r.date===vDate)x.today=v;
-    if(r.date>=from&&r.date<=vDate){x.s+=v;x.c++}
-    x.si+=v;x.ci++}));
-  const all=Object.values(st),f1=x=>x.toFixed(1);
-  all.forEach(x=>{x.avg=x.c?x.s/x.c:0;x.avgi=x.ci?x.si/x.ci:0;x.pf=0;x.pa=0;x.tf=0;x.ta=0;x.lf=0;x.la=0});
-  {const byDate={},acc={};
-   Object.values(reports).forEach(r=>{if(r.date<=vDate)(r.entries||[]).forEach(e=>{if(st[e.p])(byDate[r.date]=byDate[r.date]||[]).push({x:st[e.p],v:val(e)})})});
-   const fs0=fortStart(vDate);
-   Object.keys(byDate).sort().forEach(d=>{const rows=byDate[d],fsd=fortStart(d),cmp=(a,b)=>a.x.n.localeCompare(b.x.n),cur=d>=fs0;
-     rows.forEach(r=>{let a=acc[r.x.p];if(!a||a.fs!==fsd)a=acc[r.x.p]={fs:fsd,s:0,c:0};a.s+=r.v;a.c++});
-     rows.slice().sort((a,b)=>a.v-b.v||cmp(a,b)).slice(0,N).forEach(r=>{r.x.pa++;if(cur)r.x.pf++});
-     rows.slice().sort((a,b)=>b.v-a.v||cmp(a,b)).slice(0,N).forEach(r=>{r.x.ta++;if(cur)r.x.tf++});
-     Object.keys(acc).forEach(p=>{const a=acc[p];if(a.fs===fsd&&a.c>0&&a.s/a.c<D.avgMin){st[p].la++;if(cur)st[p].lf++}})})}
-  const rep=all.filter(x=>x.today!==null),pAll=all.filter(x=>x.c>0);
-  const tPoor=rep.slice().sort((a,b)=>a.today-b.today||a.n.localeCompare(b.n)).slice(0,N),tBest=rep.slice().sort((a,b)=>b.today-a.today||a.n.localeCompare(b.n)).slice(0,N);
-  const pPoor=pAll.slice().sort((a,b)=>a.s-b.s).slice(0,N),pBest=pAll.slice().sort((a,b)=>b.s-a.s).slice(0,N);
-  const low=pAll.filter(x=>x.avg<D.avgMin).sort((a,b)=>a.avg-b.avg);
-  const tAll=all.slice().sort((a,b)=>(b.today===null?-1:b.today)-(a.today===null?-1:a.today)||a.n.localeCompare(b.n));
-  const cAll=pAll.slice().sort((a,b)=>b.s-a.s),iAll=all.filter(x=>x.ci>0).sort((a,b)=>b.si-a.si);
-  const mv=(x,m)=>Object.assign(m==='day'?{date:vDate,count:x.today===null?0:x.today,avg:f1(x.avg)}:{date:per,count:x.s,avg:f1(x.avg)},{poorFN:x.pf,poorAll:x.pa,lowFN:x.lf,lowAll:x.la,badFN:x.pf+x.lf,badAll:x.pa+x.la,topFN:x.tf,topAll:x.ta,limit:D.avgMin,fn:fortLabel(vDate)});
-  const stat=x=>`Today ${x.today===null?'-':x.today} · Avg ${f1(x.avg)}/day · Total ${x.s} (${x.c} days)`;
-  const stat2=x=>adm?`Poorest-10 list: ${x.pf} this fortnight · ${x.pa} since inception | Avg below ${D.avgMin}: ${x.lf} · ${x.la}`:'';
-  const it=(x,v,m,lw)=>({n:x.n,sub:x.gp,stat:stat(x),stat2:stat2(x),v,low:lw,c:ct(x.p,x.n,mv(x,m))});
-  const reg=(id,title,sub,arr,inc)=>{EXP[id]={fname:id+'-'+vDate,title,sub,head:['#','Surveyor','GP','Today','Days','Avg/day','Total'].concat(pv?['Phone']:[]),
-    rows:arr.map((x,i)=>[i+1,x.n,x.gp,x.today===null?'':x.today,inc?x.ci:x.c,+f1(inc?x.avgi:x.avg),inc?x.si:x.s].concat(pv?[x.p]:[]))}};
-  const tb=(arr,cols,m,cls='')=>arr.length?`<div class="scroll"><table class="grid num ${cls}"><tr><th>#</th><th>Surveyor</th>${cols.map(c=>`<th class="sc">${c[0]}</th>`).join('')}${on?'<th></th>':''}</tr>${arr.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.n)}<div class="mu">${esc(x.gp)}</div></td>${cols.map(c=>`<td class="sc">${c[1](x)}</td>`).join('')}${on?`<td>${ct(x.p,x.n,mv(x,m))}</td>`:''}</tr>`).join('')}</table></div>`:'<p class="mu" style="padding:8px 0">No data yet.</p>';
-  // supervisor upload status
-  const sv=cfg.users.filter(u=>u.role==='bst').map(u=>({u,ok:!!(reports[vDate+'_'+u.phone]&&reports[vDate+'_'+u.phone].entries&&reports[vDate+'_'+u.phone].entries.length)})).sort((a,b)=>a.ok-b.ok||a.u.name.localeCompare(b.u.name));
-  const yes=sv.filter(x=>x.ok).length;
-  EXP['sup-status']={fname:'supervisor-report-status-'+vDate,title:'Supervisor report status',sub:'Date '+vDate,head:['#','Supervisor','GP','Phone','Report uploaded'],rows:sv.map((x,i)=>[i+1,x.u.name,gpName(x.u),x.u.phone,x.ok?'YES':'NO'])};
-  const thanks='Hello {name}, thank you for uploading the survey report for {date}.';
-  const svBody=sv.length?sv.map((x,i)=>`<div class="it"><div class="rk ${x.ok?'best':'poor'}">${i+1}</div><div class="in"><div class="nm2">${esc(x.u.name)}</div><div class="mu">${esc(gpName(x.u))}</div></div><div class="rt"><div class="sv ${x.ok?'best':'poor'}">${x.ok?'YES':'NO'}</div>${ct(x.u.phone,x.u.name,{date:vDate,count:'',avg:''},x.ok?thanks:(D.smsg||DEFSMSG))}</div></div>`).join(''):'<p class="mu" style="padding:8px 0">No supervisors yet.</p>';
-  const qi=(arr,m)=>arr.map(x=>({p:x.p,n:x.n,gp:x.gp,msg:fillMsg(x.n,mv(x,m))}));
-  QD['today-poor']={title:'Today’s poorest performers',items:qi(tPoor,'day')};
-  QD['period-poor']={title:'Poorest performers since '+from,items:qi(pPoor,'per')};
-  QD['avg-low']={title:'Daily average below '+D.avgMin,items:qi(low,'per')};
-  QD['sup-status']={title:'Supervisors: survey report not uploaded',items:sv.filter(x=>!x.ok).map(x=>({p:x.u.phone,n:x.u.name,gp:gpName(x.u),msg:fillMsg(x.u.name,{date:vDate,count:'',avg:''},D.smsg||DEFSMSG)}))};
-  reg('today-poor','Today poorest 10','Date '+vDate,tPoor);reg('today-best','Today best 10','Date '+vDate,tBest);
-  reg('period-poor','Poorest 10 since period start','Period '+per,pPoor);reg('period-best','Best 10 since period start','Period '+per,pBest);
-  reg('avg-low','Daily average below '+D.avgMin,'Period '+per,low);
-  reg('today-all','Today total report (all VST)','Date '+vDate,tAll);reg('period-all','Cumulative report from period start','Period '+per,cAll);
-  reg('inception','Cumulative report since inception','Up to '+vDate,iAll,true);
-  const fq=all.filter(x=>x.pa||x.ta||x.la).sort((a,b)=>(b.pf+b.lf)-(a.pf+a.lf)||(b.pa+b.la)-(a.pa+a.la)||a.n.localeCompare(b.n));
-  const fqSub='This fortnight ('+fortLabel(vDate)+') and since inception, counted day by day up to '+vDate+'. Average below '+D.avgMin+' = days on which the surveyor’s fortnight-to-date average was under '+D.avgMin;
-  const fqCols=[['Poorest-10 (fortnight)',x=>x.pf],['Poorest-10 (inception)',x=>x.pa],['Avg below '+D.avgMin+' (fortnight)',x=>x.lf],['Avg below '+D.avgMin+' (inception)',x=>x.la],['Best-10 (fortnight)',x=>x.tf],['Best-10 (inception)',x=>x.ta]];
-  if(adm)EXP['freq']={fname:'times-in-lists-'+vDate,title:'Times in poorest-10 / average below '+D.avgMin+' / best-10 lists',sub:fqSub,head:['#','Surveyor','GP'].concat(fqCols.map(c=>c[0]),pv?['Phone']:[]),
-    rows:fq.map((x,i)=>[i+1,x.n,x.gp].concat(fqCols.map(c=>c[1](x)),pv?[x.p]:[]))};
-  const freqSec=adm?sec('all','🔁 Times in poorest-10 / average below '+D.avgMin+' / best-10 lists',fqSub,tb(fq,fqCols,'per','xwide'),'freq'):'';
-  const tTot=rep.reduce((a,x)=>a+x.today,0),pTot=pAll.reduce((a,x)=>a+x.s,0),iTot=iAll.reduce((a,x)=>a+x.si,0);
-  const dates=Object.values(reports).filter(r=>r.entries&&r.entries.length).map(r=>r.date).sort();
-  // ----- special activity reports -----
-  const SPN=cfg.users.filter(u=>u.role==='bst').slice().sort((a,b)=>gpName(a).localeCompare(gpName(b)));
-  const dmy=d=>d.split('-').reverse().join('.'),spFrom=D.spFrom||addDays(today(),-14);
-  const spSum=(a,b)=>SPN.map(u=>{const v={};SPA.forEach(x=>v[x[0]]=0);let any=false;
-    Object.values(reports).forEach(r=>{if(r.sp&&r.sup===u.phone&&r.date>=a&&r.date<=b){any=true;SPA.forEach(x=>v[x[0]]+=(+r.sp[x[0]]||0))}});
-    return{u,v,any,t:SPA.reduce((s,x)=>s+v[x[0]],0)}});
-  const spTbl=(rows,id,title,sub,blank)=>{
-    const tot={};SPA.forEach(x=>tot[x[0]]=rows.reduce((s,r)=>s+r.v[x[0]],0));const gt=rows.reduce((s,r)=>s+r.t,0);
-    const cell=(r,k)=>blank&&!r.any?'':r.v[k],tc=r=>blank&&!r.any?'':r.t;
-    EXP[id]={fname:id+'-'+vDate,title,sub,head:['Sl','Gram Panchayat',...SPA.map(x=>x[1]),'Total'],rows:rows.map((r,i)=>[i+1,gpName(r.u),...SPA.map(x=>cell(r,x[0])),tc(r)]).concat([['','TOTAL',...SPA.map(x=>tot[x[0]]),gt]])};
-    return rows.length?`<div class="mu" style="font-size:12px;padding:4px 0">Swipe sideways to see all columns</div><div class="scroll"><table class="grid wide num tot"><tr><th>Sl</th><th>Gram Panchayat</th>${SPA.map(x=>`<th class="sc">${x[1]}</th>`).join('')}<th class="sc">Total</th></tr>${rows.map((r,i)=>`<tr><td>${i+1}</td><td><b>${esc(gpName(r.u))}</b></td>${SPA.map(x=>`<td class="sc">${cell(r,x[0])}</td>`).join('')}<td class="sc">${tc(r)}</td></tr>`).join('')}<tr><td></td><td><b>TOTAL</b></td>${SPA.map(x=>`<td class="sc">${tot[x[0]]}</td>`).join('')}<td class="sc">${gt}</td></tr></table></div>`:'<p class="mu" style="padding:8px 0">No supervisors yet.</p>'};
-  const spv=SPN.map(u=>({u,ok:!!(reports[vDate+'_'+u.phone]&&reports[vDate+'_'+u.phone].sp)})).sort((a,b)=>a.ok-b.ok||gpName(a.u).localeCompare(gpName(b.u)));
-  const spy=spv.filter(x=>x.ok).length,spthanks='Hello {name}, thank you for uploading the special activity report for {date}.';
-  EXP['sp-status']={fname:'special-activity-status-'+vDate,title:'Special activity report updated?',sub:'Date '+vDate,head:['#','Supervisor','GP','Phone','Report uploaded'],rows:spv.map((x,i)=>[i+1,x.u.name,gpName(x.u),x.u.phone,x.ok?'YES':'NO'])};
-  const spBody=spv.length?spv.map((x,i)=>`<div class="it"><div class="rk ${x.ok?'best':'poor'}">${i+1}</div><div class="in"><div class="nm2">${esc(gpName(x.u))}</div><div class="mu">${esc(x.u.name)}</div></div><div class="rt"><div class="sv ${x.ok?'best':'poor'}">${x.ok?'YES':'NO'}</div>${ct(x.u.phone,x.u.name,{date:vDate,count:'',avg:''},x.ok?spthanks:(D.spmsg||DEFSPMSG))}</div></div>`).join(''):'<p class="mu" style="padding:8px 0">No supervisors yet.</p>';
-  QD['sp-status']={title:'Supervisors: special activity report not uploaded',items:spv.filter(x=>!x.ok).map(x=>({p:x.u.phone,n:x.u.name,gp:gpName(x.u),msg:fillMsg(x.u.name,{date:vDate,count:'',avg:''},D.spmsg||DEFSPMSG)}))};
-  const spStatus=sec('all','🧹 Special activity report updated?',vDate+' · '+spy+' YES · '+(spv.length-spy)+' NO',spBody,'sp-status');
-  const dTitle='Status of Special Pulse mode cleaning activity on '+dmy(vDate),spDates=Object.values(reports).filter(r=>r.sp).map(r=>r.date).sort();
-  const spSections=sec('all','🧹 Daily special activity report',dTitle,spTbl(spSum(vDate,vDate),'sp-daily',dTitle,'Date '+vDate,true),'sp-daily')
-   +`<div class="card datebar"><div><b>Special activity: start date</b><div class="mu">${adm?'Choose the date to measure from':'Set by the Block Nodal Officer'}</div></div>${adm?`<input type="date" id="sf" value="${spFrom}" max="${vDate}">`:`<b>${dmy(spFrom)}</b>`}</div>`
-   +sec('all','🧹 Cumulative special activity report from '+dmy(spFrom),dmy(spFrom)+' to '+dmy(vDate),spTbl(spSum(spFrom,vDate),'sp-period','Cumulative special activity report from '+dmy(spFrom),dmy(spFrom)+' to '+dmy(vDate),false),'sp-period')
-   +sec('all','🧹 Cumulative special activity report since inception',spDates.length?'From '+dmy(spDates[0])+' to '+dmy(vDate):'',spTbl(spSum('0000-01-01',vDate),'sp-inc','Cumulative special activity report since inception','Up to '+dmy(vDate),false),'sp-inc');
-  return `${pv?`<div class="card datebar"><div><b>Call / WhatsApp / SMS</b><div class="mu">${on?'📞 💬 ✉️ shown beside every name':'Hidden. Switch ON to show beside every name'}</div></div><button id="ctb" class="tg ${on?'':'g'}">${on?'ON':'OFF'}</button></div>`:''}
-  <div class="card datebar"><div><b>Report date</b><div class="mu">Dashboard shows data up to this day</div></div><input type="date" id="dt" value="${vDate}" max="${today()}"></div>
-  ${sec('all','📨 Today’s report uploaded?',vDate+' · '+yes+' YES · '+(sv.length-yes)+' NO',svBody,'sup-status')}
-  ${spStatus}
-  ${sec('poor','⚠️ Today’s 10 poorest performers',vDate,lst(tPoor.map(x=>it(x,x.today,'day',D.target>0&&x.today<D.target)),'poor'),'today-poor')}
-  ${sec('best','🏆 Today’s 10 best performers',vDate,lst(tBest.map(x=>it(x,x.today,'day',D.target>0&&x.today<D.target)),'best'),'today-best')}
-  <div class="card datebar"><div><b>Period start date</b><div class="mu">${adm?'Choose the date to measure from':'Set by the Block Nodal Officer'}</div></div>${adm?`<input type="date" id="fr" value="${from}" max="${vDate}">`:`<b>${from}</b>`}</div>
-  ${sec('poor','⚠️ 10 poorest performers since '+from,'Total '+esc(D.label)+', '+per,lst(pPoor.map(x=>it(x,x.s,'per')),'poor'),'period-poor')}
-  ${sec('best','🏆 10 best performers since '+from,'Total '+esc(D.label)+', '+per,lst(pBest.map(x=>it(x,x.s,'per')),'best'),'period-best')}
-  ${sec('poor','📉 Daily average below '+D.avgMin+' ('+low.length+')','Average per day, '+per,lst(low.map(x=>it(x,+f1(x.avg),'per')),'poor'),'avg-low')}
-  ${freqSec}
-  ${sec('all','📋 Today’s total report (all VST)',vDate+' · '+rep.length+' of '+all.length+' surveyors reported · total '+tTot+' surveys',tb(tAll,[['Today',x=>x.today===null?'-':x.today],['Avg',x=>f1(x.avg)],['Total',x=>x.s]],'day'),'today-all')}
-  ${sec('all','📋 Cumulative report from period start',per+' · total '+pTot+' surveys',tb(cAll,[['Days',x=>x.c],['Avg',x=>f1(x.avg)],['Total',x=>x.s]],'per'),'period-all')}
-  ${sec('all','📈 Cumulative report since inception',dates.length?'From '+dates[0]+' · '+iAll.length+' surveyors · '+iTot+' total surveys':'',tb(iAll,[['Days',x=>x.ci],['Avg',x=>f1(x.avgi)],['Total',x=>x.si]],'per'),'inception')}
-  ${spSections}`;
-}
-
-// ---------- Special activity report ----------
-function spView(sp,adm,withDate){
-  if(!sp)return'';
-  const rid=vDate+'_'+sp,rep=reports[rid],v=(rep&&rep.sp)||{},u=cfg.users.find(x=>x.phone===sp);
-  const tot=SPA.reduce((a,x)=>a+(+v[x[0]]||0),0);
-  return `<div class="card"><div class="row sp"><h2>${adm?'Special activity report':'Special Pulse mode cleaning activity'}</h2>${withDate?`<input type="date" id="dt" value="${vDate}" max="${today()}">`:''}</div>
-  <p class="mu">${esc(gpName(u))} · ${rep&&rep.sp?'Saved earlier. You can edit and save again.':'Not yet submitted for this date.'}</p>
-  ${SPA.map(a=>`<div class="row sp" style="padding:7px 0;border-bottom:1px solid var(--ln)"><span style="flex:1">${a[2]}</span><input type="number" min="0" class="spv" data-k="${a[0]}" value="${v[a[0]]??''}"></div>`).join('')}
-  <div class="row sp" style="padding:10px 0"><b>Total cleanliness done</b><b id="spt">${tot}</b></div>
-  <button id="spsave" class="full">Save special activity report</button>${adm&&rep&&rep.sp?'<button id="spdel" class="g full" style="margin-top:8px">Delete this report</button>':''}<p id="spok" class="ok">${esc(spOk)}</p></div>`;
-}
-function bindSp(sp,adm,withDate){
-  const g=id=>document.getElementById(id);
-  if(!sp)return;
-  if(withDate)g('dt').onchange=e=>{vDate=e.target.value||today();spOk='';draw()};
-  const upd=()=>{g('spt').textContent=[...document.querySelectorAll('.spv')].reduce((a,i)=>a+(+i.value||0),0)};
-  document.querySelectorAll('.spv').forEach(i=>i.oninput=upd);
-  g('spsave').onclick=async()=>{
-    const vals={};document.querySelectorAll('.spv').forEach(i=>vals[i.dataset.k]=Math.max(0,Math.floor(+i.value||0)));
-    const rid=vDate+'_'+sp;g('spsave').disabled=true;g('spsave').textContent='Saving…';
-    try{await setDoc(doc(fdb,'reports',rid),{v:2,date:vDate,sup:sp,sp:vals,spBy:me.name},{merge:true});reports[rid]={...(reports[rid]||{v:2,date:vDate,sup:sp}),sp:vals};spOk='Saved ✓';dirty=false;draw()}
-    catch(e){g('spsave').disabled=false;g('spsave').textContent='Save special activity report';g('spok').className='bad';g('spok').textContent='Could not save ('+(e.code||'error')+'). Check internet and try again.'}};
-  if(g('spdel'))g('spdel').onclick=async()=>{const rid=vDate+'_'+sp;try{await setDoc(doc(fdb,'reports',rid),{sp:deleteField()},{merge:true});if(reports[rid])delete reports[rid].sp;spOk='';dirty=false;draw()}catch(e){}};
-}
-
-// ---------- Bulk message (Block Nodal Officer / Dealing Official) ----------
-let bulk={g:'sur',sup:'',msg:'Hello {name}, ',off:new Set()};
-const bulkList=()=>cfg.users.filter(u=>u.phone!==me.phone&&(bulk.g==='sur'?u.role==='sur':bulk.g==='bst'?u.role==='bst':bulk.g==='gp'?u.role==='gp':bulk.g==='sup1'?(u.role==='sur'&&u.sup===bulk.sup):bulk.g==='all'?(u.role==='sur'||u.role==='bst'):false));
-function bulkView(){
-  const sv=sups();if(!bulk.sup&&sv.length)bulk.sup=sv[0].phone;
-  const L=bulkList(),n=L.filter(u=>!bulk.off.has(u.phone)).length;
-  const G=[['sur','All surveyors'],['bst','All supervisors'],['sup1','Surveyors of one supervisor'],['all','All surveyors and supervisors'],['gp','GP Level Nodal Officers']];
-  return `<div class="card"><h2>Bulk message</h2>
-  <p class="mu">Choose who gets the message and type it. {name} is replaced by each person’s name. Then open the send panel.</p>
-  <select id="bg" class="full" style="margin-bottom:8px">${G.map(g=>`<option value="${g[0]}" ${bulk.g===g[0]?'selected':''}>${g[1]}</option>`).join('')}</select>
-  ${bulk.g==='sup1'?`<select id="bs" class="full" style="margin-bottom:8px">${sv.map(s=>`<option value="${s.phone}" ${bulk.sup===s.phone?'selected':''}>${esc(gpName(s))} · ${esc(s.name)}</option>`).join('')}</select>`:''}
-  <textarea id="bm" rows="4" class="full" style="margin-bottom:8px">${esc(bulk.msg)}</textarea>
-  <div class="row sp"><span class="mu" id="bc">${n} of ${L.length} selected</span><span><button class="s" id="ba" style="color:var(--ac)">Select all</button> <button class="s" id="bn" style="color:var(--ac)">Select none</button></span></div>
-  <div class="qlist" style="max-height:38vh">${L.map(u=>{const sp=cfg.users.find(x=>x.phone===u.sup);return `<label class="it" style="cursor:pointer"><input type="checkbox" data-b="${u.phone}" ${bulk.off.has(u.phone)?'':'checked'}><div class="in"><div class="nm2">${esc(u.name)}</div><div class="mu">${esc(ROLES[u.role])}${u.role==='sur'&&sp?' · '+esc(gpName(sp)):''} · ${u.phone}</div></div></label>`}).join('')||'<p class="mu">No one in this group yet.</p>'}</div>
-  <button id="bgo" class="full" style="margin-top:10px" ${n?'':'disabled'}>📨 Open send panel (${n})</button></div>`;
-}
-function bindBulk(){
-  const g=id=>document.getElementById(id),keep=()=>{bulk.msg=g('bm').value};
-  g('bg').onchange=e=>{keep();bulk.g=e.target.value;bulk.off=new Set();draw()};
-  if(g('bs'))g('bs').onchange=e=>{keep();bulk.sup=e.target.value;bulk.off=new Set();draw()};
-  g('bm').oninput=keep;
-  const cnt=()=>{const L=bulkList(),n=L.filter(u=>!bulk.off.has(u.phone)).length;g('bc').textContent=n+' of '+L.length+' selected';g('bgo').textContent='📨 Open send panel ('+n+')';g('bgo').disabled=!n};
-  document.querySelectorAll('[data-b]').forEach(c=>c.onchange=()=>{c.checked?bulk.off.delete(c.dataset.b):bulk.off.add(c.dataset.b);cnt()});
-  g('ba').onclick=()=>{keep();bulk.off=new Set();draw()};
-  g('bn').onclick=()=>{keep();bulk.off=new Set(bulkList().map(u=>u.phone));draw()};
-  g('bgo').onclick=()=>{keep();
-    const items=bulkList().filter(u=>!bulk.off.has(u.phone)).map(u=>{const sp=cfg.users.find(x=>x.phone===u.sup);return{p:u.phone,n:u.name,gp:u.role==='sur'&&sp?gpName(sp):ROLES[u.role],msg:fillMsg(u.name,{date:vDate},bulk.msg),done:false}});
-    Q={title:'Bulk message',ch:'wa',group:bulk.msg.replace(/\{name\}/g,'all').replace(/\{date\}/g,vDate).trim(),items};renderQ()};
-}
-
-// ---------- Users (admin, Excel upload) ----------
-function userForm(){
-  const e=editU?cfg.users.find(u=>u.phone===editU):null,r=e?e.role:'sur',sv=sups();
-  return `<div class="card"><h2>${e?'Edit user':'Add one user'}</h2>
-  <input id="un" class="full" placeholder="Name" value="${esc(e?e.name:'')}" style="margin-bottom:8px">
-  <input id="up" class="full" type="tel" inputmode="numeric" maxlength="10" placeholder="10-digit phone number" value="${e?e.phone:''}" ${e?'readonly':''} style="margin-bottom:8px">
-  <select id="ur" class="full" style="margin-bottom:8px" ${e&&e.phone===me.phone?'disabled':''}>${Object.keys(ROLES).map(k=>`<option value="${k}" ${k===r?'selected':''}>${ROLES[k]}</option>`).join('')}</select>
-  <select id="us" class="full" style="margin-bottom:8px">${sv.map(s=>`<option value="${s.phone}" ${e&&e.sup===s.phone?'selected':''}>${esc(gpName(s))} · ${esc(s.name)}</option>`).join('')||'<option value="">No supervisors yet</option>'}</select>
-  <input id="ug" class="full" placeholder="GP name (for supervisors), e.g. Talgachhari-II" value="${esc(e&&e.gp?e.gp:'')}" style="margin-bottom:8px">
-  <div class="row"><button id="usv" class="full">${e?'Update user':'Add user'}</button>${e?'<button id="ucn" class="g full">Cancel</button>':''}</div>
-  <p id="uf" class="${fmsg.startsWith('✓')?'ok':'bad'}">${esc(fmsg)}</p></div>`;
-}
-function usersView(){
-  const cnt=Object.keys(ROLES).map(k=>`${ROLES[k]}: <b>${cfg.users.filter(u=>u.role===k).length}</b>`).join(' · ');
-  const order=Object.keys(ROLES);
-  const list=cfg.users.slice().sort((a,b)=>order.indexOf(a.role)-order.indexOf(b.role));
-  return userForm()+`<div class="card"><h2>Upload users from Excel</h2>
-  <p class="mu">First sheet, with columns: <b>Name</b>, <b>Designation</b>, <b>Phone Number</b>. For surveyors, add a 4th column <b>Supervisor Phone</b> (the phone number of their VBDC Supervisor). Optional 5th column <b>GP Name</b> for supervisors (if empty, the GP name is taken from the designation text after the first hyphen, like SUPERVISOR-Talgachhari-II). Designation must contain: Surveyor (or VST), Supervisor, GP Level Nodal, Block Level Dealing, or Block Level Nodal.</p>
-  <p class="mu">Everyone except surveyors gets a login: <b>ID = phone number, starting password = ${DEFPW}</b>. Ask them to change it in the Password tab.</p>
-  <button id="smp" class="g full" style="margin-bottom:8px">Download sample Excel file</button>
-  <select id="mode" class="full" style="margin-bottom:8px"><option value="add">Add new / update existing</option><option value="rep">Replace all (delete everyone not in the file, except me)</option></select>
-  <input type="file" id="fx" class="full" accept=".xlsx,.xls,.csv"><p class="${umsg.startsWith('✓')?'ok':'bad'}">${esc(umsg)}</p>
-  <button id="mk" class="g full">Create missing logins</button></div>
-  <div class="card"><h2>All users</h2><p class="mu">${cnt}</p><div class="scroll" style="max-height:420px;overflow-y:auto"><table>
-  ${list.map(u=>{const s=cfg.users.find(x=>x.phone===u.sup);return `<tr><td>${esc(u.name)}<div class="mu">${esc(u.desig||ROLES[u.role])}</div></td><td>${u.phone}${u.role==='sur'?`<div class="mu">${s?esc(s.name):'⚠ no supervisor'}</div>`:''}</td><td><button class="s" style="color:var(--ac)" data-e="${u.phone}">Edit</button>${u.phone===me.phone?'':` <button class="s" data-d="${u.phone}">Remove</button>`}</td></tr>`}).join('')}</table></div></div>`;
-}
-const roleOf=d=>{d=d.toLowerCase();return /surveyor|\bvst\b/.test(d)?'sur':/supervisor/.test(d)?'bst':/dealing/.test(d)?'dealing':/gp/.test(d)?'gp':/nodal|block/.test(d)?'block':''};
-async function makeLogins(list){
-  const app2=initializeApp(firebaseConfig,'s'+Date.now()),sa=getAuth(app2);let made=0,fail=0;
-  for(const r of list){try{await createUserWithEmailAndPassword(sa,r.phone+DOM,DEFPW);made++;await signOut(sa)}catch(e){if(e.code!=='auth/email-already-in-use')fail++}}
-  await deleteApp(app2);return{made,fail};
-}
-function bindUsers(){
-  const g=id=>document.getElementById(id),say=t=>{umsg=t;draw()};
-  const upd=()=>{const r=g('ur').value;g('us').style.display=r==='sur'?'':'none';g('ug').style.display=r==='bst'?'':'none'};g('ur').onchange=upd;upd();
-  const err=t=>{g('uf').className='bad';g('uf').textContent=t};
-  document.querySelectorAll('[data-e]').forEach(b=>b.onclick=()=>{editU=b.dataset.e;fmsg='';draw();window.scrollTo(0,0)});
-  if(g('ucn'))g('ucn').onclick=()=>{editU=null;fmsg='';draw()};
-  g('usv').onclick=async()=>{
-    const name=g('un').value.trim(),ph=g('up').value.replace(/\D/g,'').slice(-10),role=editU&&editU===me.phone?'block':g('ur').value,old=cfg.users.find(u=>u.phone===ph);
-    if(!name||ph.length!==10)return err('Enter a name and a 10-digit phone number.');
-    if(role==='sur'&&!g('us').value)return err('Choose the supervisor for this surveyor.');
-    if(!editU&&old)return err('This phone number already exists. Tap Edit beside it to change it.');
-    const rec={role,name,desig:old&&old.role===role&&old.desig?old.desig:ROLES[role],phone:ph};
-    if(role==='sur')rec.sup=g('us').value;if(role==='bst'&&g('ug').value.trim())rec.gp=g('ug').value.trim();
-    try{await setDoc(doc(fdb,'users',ph),rec);let x='';if(role!=='sur'){const r=await makeLogins([rec]);if(r.made)x=' Login created (password '+DEFPW+').'}editU=null;fmsg='✓ Saved.'+x;draw()}
-    catch(e){err('Could not save ('+(e.code||'error')+').')}};
-  document.querySelectorAll('[data-d]').forEach(b=>b.onclick=async()=>{try{await deleteDoc(doc(fdb,'users',b.dataset.d));say('✓ User removed. They can no longer see any data.')}catch(e){say('Could not remove this user.')}});
-  g('mk').onclick=async()=>{say('Working…');const r=await makeLogins(cfg.users.filter(u=>u.role!=='sur'));say(`✓ ${r.made} new logins created.`+(r.fail?` ${r.fail} failed.`:''))};
-  g('smp').onclick=()=>{const ws=XLSX.utils.aoa_to_sheet([['Name','Designation','Phone Number','Supervisor Phone'],['Ramesh Das','VBDC Supervisor','9000000011',''],['Sita Roy','VBDC Surveyor','8000000001','9000000011'],['Block Dealing Name','Block Level Dealing Official','9000000004',''],['GP Nodal Name','GP Level Nodal Officer','9000000003','']]);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Users');XLSX.writeFile(wb,'users-sample.xlsx')};
-  g('fx').onchange=e=>{
-    const f=e.target.files[0];if(!f)return;
-    if(typeof XLSX==='undefined'){say('Excel reader could not load. Check the internet connection and retry.');return}
-    const mode=g('mode').value,r=new FileReader();
-    r.onload=async ev=>{try{
-      const wb=XLSX.read(ev.target.result,{type:'array'});
-      const rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:''});
-      const pick=(o,keys)=>{for(const k in o)if(keys.includes(k.toLowerCase().replace(/[^a-z]/g,'')))return String(o[k]).trim();return''};
-      const dg=s=>String(s).replace(/\D/g,'').slice(-10);
-      const map=new Map();let skipped=0,nosup=0;
-      rows.forEach(o=>{
-        const name=pick(o,['name']),d=pick(o,['designation','role']),p=dg(pick(o,['phone','phonenumber','mobile','mobilenumber','mobileno','phoneno'])),role=roleOf(d);
-        const sup=dg(pick(o,['supervisorphone','supervisormobile','supervisor'])),gp=pick(o,['gpname','gp','grampanchayat','grampanchayatname']);
-        if(!name||p.length!==10||!role||p===me.phone){skipped++;return}
-        if(role==='sur'&&!sup)nosup++;
-        const rec={role,name,desig:d||ROLES[role],phone:p};if(role==='sur'&&sup)rec.sup=sup;if(role==='bst'&&gp)rec.gp=gp;
-        map.set(p,rec)});
-      say('Working…');
-      const ops=[];
-      if(mode==='rep')cfg.users.forEach(u=>{if(u.phone!==me.phone&&!map.has(u.phone))ops.push(['d',u.phone])});
-      map.forEach(r=>ops.push(['s',r]));
-      for(let i=0;i<ops.length;i+=400){const b=writeBatch(fdb);
-        ops.slice(i,i+400).forEach(o=>o[0]==='d'?b.delete(doc(fdb,'users',o[1])):b.set(doc(fdb,'users',o[1].phone),o[1]));await b.commit()}
-      const lg=await makeLogins([...map.values()].filter(x=>x.role!=='sur'));
-      say(`✓ ${map.size} users saved, ${skipped} rows skipped (missing name, bad phone or unknown designation). ${lg.made} new logins created.`+(lg.fail?` ${lg.fail} logins failed.`:'')+(nosup?` ${nosup} surveyors have no supervisor phone.`:''));
-    }catch(err){say('Could not read or save this file ('+(err.code||'error')+').')}};
-    r.readAsArrayBuffer(f);
-  };
-}
-
-// ---------- Dashboard settings (admin) ----------
-function formatView(){
-  const D=cfg.dash;
-  return `<div class="card"><h2>Dashboard settings</h2>
-  <label>Count column name<br><input id="fl" class="full" value="${esc(D.label)}"></label>
-  <div class="row" style="margin-top:8px"><label>Daily target (0 = none)<br><input id="fg" type="number" min="0" value="${D.target}"></label><label>Low average limit<br><input id="fa" type="number" min="1" value="${D.avgMin}"></label></div>
-  <p class="mu">The dashboard always shows 10 names per list. Choose the period start date on the Dashboard tab.</p>
-  <button id="sf" class="full" style="margin-top:12px">Save settings</button><p id="ok" class="ok"></p></div>`;
-}
-function bindFormat(){
-  document.getElementById('sf').onclick=()=>{
-    const g=id=>document.getElementById(id),D=cfg.dash;
-    D.label=g('fl').value.trim()||D.label;D.target=Math.max(0,+g('fg').value||0);D.avgMin=Math.max(1,+g('fa').value||20);
-    saveCfg();g('ok').textContent='Saved ✓';
-  };
-}
-draw();
-</script></body></html>
+import {initializeApp} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-app.js";
+import {getAuth,onAuthStateChanged,signInWithEmailAndPassword,signOut} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-auth.js";
+import {initializeFirestore,getFirestore,persistentLocalCache,collection,doc,onSnapshot,setDoc,writeBatch} from "https://www.gstatic.com/firebasejs/13.4.0/firebase-firestore.js";
+const app=initializeApp({apiKey:"AIzaSyCATfBQGYMcP-keloqAbMG6g0RsonocSU4",authDomain:"aero-apms.firebaseapp.com",projectId:"aero-apms",storageBucket:"aero-apms.firebasestorage.app",messagingSenderId:"136888779764",appId:"1:136888779764:web:8ec0fe73442edd2c7eefa1"});
+const auth=getAuth(app);let fs;try{fs=initializeFirestore(app,{localCache:persistentLocalCache()})}catch(e){fs=getFirestore(app)}
+const $=id=>document.getElementById(id);
+const ID={apps:a=>a.ref,blos:b=>(b.acNo||'')+'_'+b.partNo,history:h=>h.date,reminderlog:r=>r.id};
+const eid=s=>encodeURIComponent(String(s)).replace(/\./g,'%2E');
+const sj=o=>o&&typeof o==='object'?Array.isArray(o)?'['+o.map(sj).join()+']':'{'+Object.keys(o).sort().map(k=>JSON.stringify(k)+':'+sj(o[k])).join()+'}':JSON.stringify(o);
+const docs={apps:new Map(),blos:new Map(),history:new Map(),reminderlog:new Map()},sig={apps:new Map(),blos:new Map(),history:new Map(),reminderlog:new Map()};
+let remSig='',unsubs=[],user=null;
+const toDoc=(n,o)=>{let c=JSON.parse(JSON.stringify(o));if(n==='apps'){delete c.pendingDays;if(c._xl!==undefined){c.level=c._xl;if(c._xs!==undefined)c.pendingSince=c._xs;else delete c.pendingSince;if(c._xa!==undefined)c.ageMissing=c._xa;else delete c.ageMissing}delete c._xl;delete c._xs;delete c._xa}return c};
+function status(t){if(user){$('lgOut')&&0;document.querySelector('.sidebar-foot').innerHTML=`Signed in: ${esc(user.email)}<br>Cloud: ${t}`}}
+function rebuild(n){let l=[...docs[n].values()];if(n==='blos')l.sort((a,b)=>String(a.acNo).localeCompare(String(b.acNo))||String(a.partNo).localeCompare(String(b.partNo),undefined,{numeric:true}));if(n==='history'||n==='reminderlog')l.sort((a,b)=>String(b.date).localeCompare(String(a.date)));db[n]=l;renderAll()}
+function fail(e){if(e.code==='permission-denied'){$('lgErr').textContent='This account is not authorised to use APMS.';signOut(auth)}else status('error ('+e.code+')')}
+function listen(n){unsubs.push(onSnapshot(collection(fs,n),s=>{s.docChanges().forEach(c=>{if(c.type==='removed'){docs[n].delete(c.doc.id);sig[n].delete(c.doc.id)}else{let d=c.doc.data();docs[n].set(c.doc.id,d);sig[n].set(c.doc.id,sj(d))}});rebuild(n);status(s.metadata.fromCache?'offline copy':'synced')},fail))}
+async function push(){if(!user)return;const ops=[];
+for(const n in ID){const cur=new Map();db[n].forEach(o=>cur.set(eid(ID[n](o)),toDoc(n,o)));
+for(const [id,d] of cur){const g=sj(d);if(sig[n].get(id)!==g){ops.push({n,id,d});sig[n].set(id,g)}}
+for(const id of [...sig[n].keys()])if(!cur.has(id)){ops.push({n,id,del:1});sig[n].delete(id)}}
+const rs=sj(db.reminders||{}),remChanged=rs!==remSig;if(remChanged)remSig=rs;
+if(!ops.length&&!remChanged)return;status('saving…');
+try{const jobs=[];for(let i=0;i<ops.length;i+=400){const b=writeBatch(fs);ops.slice(i,i+400).forEach(o=>o.del?b.delete(doc(fs,o.n,o.id)):b.set(doc(fs,o.n,o.id),o.d));jobs.push(b.commit())}
+if(remChanged)jobs.push(setDoc(doc(fs,'meta','reminders'),JSON.parse(JSON.stringify(db.reminders||{}))));
+await Promise.all(jobs);status('synced')}catch(e){ops.forEach(o=>sig[o.n].delete(o.id));remSig='';status('save failed ('+(e.code||e.message)+')');alert('Could not save to the cloud: '+(e.code||e.message))}}
+function start(){window.cloud.active=true;$('loginBox').style.display='none';for(const n in docs){docs[n].clear();sig[n].clear();db[n]=[]}db.reminders={};remSig='';Object.keys(ID).forEach(listen);unsubs.push(onSnapshot(doc(fs,'meta','reminders'),s=>{db.reminders=s.exists()?s.data():{};remSig=sj(db.reminders);renderAll()},fail));status('syncing…');renderAll()}
+function stop(){unsubs.forEach(f=>f());unsubs=[];window.cloud.active=false;user=null;for(const n in docs){docs[n].clear();sig[n].clear();db[n]=[]}db.reminders={};renderAll();document.querySelector('.sidebar-foot').textContent='Not signed in';$('lgPass').value='';$('loginBox').style.display='flex'}
+window.cloud={active:false,push,signOut:()=>signOut(auth),migrate(){let o=null;try{o=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!o||!((o.apps||[]).length||(o.blos||[]).length)){alert('No old data found in this browser.');return}if(!confirm(`Upload ${(o.apps||[]).length} applications and ${(o.blos||[]).length} BLOs from this browser to the cloud?`))return;const mg=(n,cur,old)=>{const m=new Map(cur.map(x=>[eid(ID[n](x)),x]));(old||[]).forEach(x=>m.set(eid(ID[n](x)),x));return [...m.values()]};db.apps=mg('apps',db.apps,o.apps);db.blos=mg('blos',db.blos,o.blos);db.history=mg('history',db.history,o.history);saveDB();alert('Upload started. Wait for Cloud: synced.')}};
+$('lgBtn').onclick=async()=>{$('lgErr').textContent='';try{await signInWithEmailAndPassword(auth,$('lgEmail').value.trim(),$('lgPass').value)}catch(e){$('lgErr').textContent=({'auth/invalid-credential':'Wrong email or password.','auth/invalid-email':'Enter a valid email.','auth/too-many-requests':'Too many attempts. Try again later.','auth/network-request-failed':'No internet connection.'})[e.code]||('Sign-in failed: '+e.code)}};
+$('lgPass').addEventListener('keydown',e=>{if(e.key==='Enter')$('lgBtn').click()});
+onAuthStateChanged(auth,u=>{if(u){user=u;start()}else stop()});
+</script>
+</body></html>
